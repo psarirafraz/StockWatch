@@ -8,7 +8,7 @@ export default function stockProfile({ navigation }) {
     const [date,setDate] = useState(new Date());
     return (
         <DateTimePicker 
-        value={ date }
+        // value={ date }
         mode='datetime'
         display='default'
         onChange={ date => setDate(date) } 
