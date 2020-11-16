@@ -4,7 +4,7 @@ import Header from '../shared/header.js';
 import Home from '../screens/home';
 import FromWhen from '../screens/FromWhen';
 import UntilWhen from '../screens/UntilWhen';
-import stockProfile from '../screens/stockProfile';
+import ChooseNotif from '../screens/ChooseNotif';
 
 const screens = {
   Home: {
@@ -27,10 +27,10 @@ const screens = {
       title: 'Until',
     }
   },
-  stockProfile: {
-    screen: stockProfile,
+  ChooseNotif: {
+    screen: ChooseNotif,
     navigationOptions: {
-      title: 'Stock Profile',
+      title: 'Choose Notification',
     }
   },
 };

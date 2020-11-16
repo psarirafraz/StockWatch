@@ -21,7 +21,9 @@ export default function FromWhen({ navigation }) {
             display="default"
             onChange={onChange}
           />
-          <Button onPress={() => navigation.navigate('UntilWhen', {FromDate , sym})} title="next"/>
+          <Button onPress={() => {
+            navigation.navigate('UntilWhen', {FromDate , sym})
+            }} title="next"/>
       </View>
     );
 }

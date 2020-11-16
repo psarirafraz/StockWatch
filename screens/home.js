@@ -20,8 +20,14 @@ export default function Home({ navigation }) {
         LoadSymbols(text);
         setBoxHide(false);
     };
-    const CloseBox = () => {
-        setBoxHide(true);
+    const FinishSearch = () => {
+        if(Symbols != null && SearchInputValue != ""){
+          Symbols.map(sym =>{
+            if(sym.symbol==SearchInputValue.toUpperCase()){
+              navigation.navigate('FromWhen', sym)
+            }
+          })
+        }
     };
 
     // const Item = ({ symbol }) => (
@@ -47,7 +53,7 @@ export default function Home({ navigation }) {
                 autoCorrect={false}
                 onChangeText={text => GetSymbols(text)}
                 value={SearchInputValue}
-                // onTouchEnd={CloseBox}
+                onEndEditing={FinishSearch}
             />
         </View>
         <SearchBox hide={modalOpen} data={Symbols} navigation={navigation}>

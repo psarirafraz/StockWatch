@@ -4,9 +4,9 @@ import { View , Button , Text} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 export default function stockProfile({ navigation }) {
-    const sym = navigation.getParam('symbol');
+    const sym = navigation.getParam('sym');
     const FromDate = navigation.getParam('FromDate');
-    const [UntilDate, setDate] = useState(Date.parse(new Date())+900000000);
+    const [UntilDate, setDate] = useState(new  Date(Date.parse(new Date())+900000000));
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate || UntilDate;
       setDate(currentDate);
@@ -21,7 +21,9 @@ export default function stockProfile({ navigation }) {
             display="default"
             onChange={onChange}
           />
-          <Button onPress={() => navigation.navigate('stockProfile', {FromDate , sym , UntilDate})} title="next"/>
+          <Button onPress={() => {
+            navigation.navigate('stockProfile', {FromDate , sym , UntilDate})
+            }} title="next"/>
       </View>
     );
 }
