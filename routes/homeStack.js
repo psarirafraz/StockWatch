@@ -2,6 +2,8 @@ import { createStackNavigator } from 'react-navigation-stack';
 import React from 'react';
 import Header from '../shared/header.js';
 import Home from '../screens/home';
+import FromWhen from '../screens/FromWhen';
+import UntilWhen from '../screens/UntilWhen';
 import stockProfile from '../screens/stockProfile';
 
 const screens = {
@@ -13,10 +15,22 @@ const screens = {
       }
     },
   },
+  FromWhen: {
+    screen: FromWhen,
+    navigationOptions: {
+      title: 'From',
+    }
+  },
+  UntilWhen: {
+    screen: UntilWhen,
+    navigationOptions: {
+      title: 'Until',
+    }
+  },
   stockProfile: {
     screen: stockProfile,
     navigationOptions: {
-      title: 'stock Profile',
+      title: 'Stock Profile',
     }
   },
 };
