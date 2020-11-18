@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 export default function stockProfile({ navigation }) {
     const sym = navigation.getParam('sym');
     const FromDate = navigation.getParam('FromDate');
-    const [UntilDate, setDate] = useState(new  Date(Date.parse(new Date())+900000000));
+    const [UntilDate, setDate] = useState(new Date(Date.parse(new Date())+900000000));
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate || UntilDate;
       setDate(currentDate);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View , TouchableHighlight , Text} from 'react-native';
-import PriceChart from '../shared/PriceChart.js';
+import PriceChart from '../shared/PriceChart2.js';
 
 export default function stockProfile({ navigation }) {
     const sym = navigation.getParam('sym');
