@@ -22,7 +22,7 @@ export default function stockProfile({ navigation }) {
             onChange={onChange}
           />
           <Button onPress={() => {
-            navigation.navigate('stockProfile', {FromDate , sym , UntilDate})
+            navigation.navigate('ChooseNotif', {FromDate , sym , UntilDate})
             }} title="next"/>
       </View>
     );

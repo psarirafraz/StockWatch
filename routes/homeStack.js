@@ -5,6 +5,8 @@ import Home from '../screens/home';
 import FromWhen from '../screens/FromWhen';
 import UntilWhen from '../screens/UntilWhen';
 import ChooseNotif from '../screens/ChooseNotif';
+import InputStop from '../screens/InputStop';
+import InputLimit from '../screens/InputLimit';
 
 const screens = {
   Home: {
@@ -31,6 +33,18 @@ const screens = {
     screen: ChooseNotif,
     navigationOptions: {
       title: 'Choose Notification',
+    }
+  },
+  InputStop: {
+    screen: InputStop,
+    navigationOptions: {
+      title: 'Set the Stop Price',
+    }
+  },
+  InputLimit: {
+    screen: InputLimit,
+    navigationOptions: {
+      title: 'Set the Limit Price',
     }
   },
 };

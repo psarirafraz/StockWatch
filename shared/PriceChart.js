@@ -1,12 +1,12 @@
 import React, { useState, useEffect  } from 'react';
 import { View  , StyleSheet} from 'react-native';
-import { VictoryLine, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
+import { VictoryLine, VictoryChart, VictoryTheme } from "victory-native";
 
 const EarningChart = (props) => {
     const symbol = props.symbol;
     const range = "1d";
     const interval = "1m";
-    const extended = "true";
+    const extended = "false";
     const [MaxQuote, setMaxQuote] = useState(0);
     const [MinQuote, setMinQuote] = useState(0);
     // const [MaxTime, setMaxTime] = useState(0);
@@ -22,10 +22,10 @@ const EarningChart = (props) => {
                     setTimestamp(Data.timestamp);
                     Data.indicators.quote.map(quotes => {
                         setEarnings(quotes.close);
-                        setMaxQuote(Math.max.apply(Math, quotes.close))
-                        setMinQuote(Math.min.apply(Math, quotes.close))
+                        // setMaxQuote(Math.max.apply(null, quotes.high))
+                        // setMinQuote(Math.min.apply(null, quotes.low))
+                        // console.log(quotes)
                     })
-                    // console.log(timestamp)
                 })
                 // setMinTime(timestamp[0])
                 // setMaxTime(timestamp[timestamp.length-1])
@@ -33,6 +33,16 @@ const EarningChart = (props) => {
             .catch(error => {
                 console.error('There was an error!', error);
             });
+            
+            fetch("https://query2.finance.yahoo.com/v7/finance/quote?&symbols="+sym)
+            .then(res => res.json())
+            .then(data => {
+                data.quoteResponse.result.map(SymbolInfo => {
+                    setMaxQuote(SymbolInfo.regularMarketDayHigh)
+                    setMinQuote(SymbolInfo.regularMarketDayLow)
+                })
+            })
+
         }, []);
     };
 
@@ -45,7 +55,7 @@ const EarningChart = (props) => {
     }else{
         return (
             <View style={styles.container}>
-                <VictoryChart domain={{y : [MinQuote, MaxQuote]}} theme={VictoryTheme.material} scale={{ x: "time" }}>
+                <VictoryChart domain={{y : [MinQuote, MaxQuote]}} theme={VictoryTheme.material}>
                     <VictoryLine data={timestamp,Earnings}/>
                 </VictoryChart>
             </View>

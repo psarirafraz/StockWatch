@@ -10,7 +10,7 @@ export default function FromWhen({ navigation }) {
       const currentDate = selectedDate || FromDate;
       setDate(currentDate);
     };
-  
+    
     return (
       <View>
           
