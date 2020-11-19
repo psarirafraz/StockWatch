@@ -17,7 +17,7 @@ const SearchBox = (props) => {
                     renderItem={({ item, index, separators }) => (
                         <TouchableHighlight
                             key={item.symbol}
-                            onPress={() => navigation.navigate('FromWhen', item)}>
+                            onPress={() => navigation.navigate('StockProfile', item)}>
                             <View style={styles.resultBoxStyle}>
                                 <Text style={styles.resultTextStyle}>{item.symbol}</Text>
                             </View>

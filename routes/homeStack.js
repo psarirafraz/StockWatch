@@ -2,11 +2,10 @@ import { createStackNavigator } from 'react-navigation-stack';
 import React from 'react';
 import Header from '../shared/header.js';
 import Home from '../screens/home';
+import StockProfile from '../screens/StockProfile';
 import FromWhen from '../screens/FromWhen';
 import UntilWhen from '../screens/UntilWhen';
-import ChooseNotif from '../screens/ChooseNotif';
-import InputStop from '../screens/InputStop';
-import InputLimit from '../screens/InputLimit';
+import NotificationInput from '../screens/NotificationInput';
 
 const screens = {
   Home: {
@@ -16,6 +15,12 @@ const screens = {
         headerTitle: () => <Header title='Home' navigation={navigation} />
       }
     },
+  },
+  StockProfile: {
+    screen: StockProfile,
+    navigationOptions: {
+      title: 'Stock Profile',
+    }
   },
   FromWhen: {
     screen: FromWhen,
@@ -29,24 +34,12 @@ const screens = {
       title: 'Until',
     }
   },
-  ChooseNotif: {
-    screen: ChooseNotif,
+  NotificationInput: {
+    screen: NotificationInput,
     navigationOptions: {
-      title: 'Choose Notification',
+      title: 'Set the Price',
     }
-  },
-  InputStop: {
-    screen: InputStop,
-    navigationOptions: {
-      title: 'Set the Stop Price',
-    }
-  },
-  InputLimit: {
-    screen: InputLimit,
-    navigationOptions: {
-      title: 'Set the Limit Price',
-    }
-  },
+  }
 };
 
 // home stack navigator screens

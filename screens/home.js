@@ -24,7 +24,7 @@ export default function Home({ navigation }) {
         if(Symbols != null && SearchInputValue != ""){
           Symbols.map(sym =>{
             if(sym.symbol==SearchInputValue.toUpperCase()){
-              navigation.navigate('FromWhen', sym)
+              navigation.navigate('StockProfile', sym)
             }
           })
         }

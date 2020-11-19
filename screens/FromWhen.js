@@ -4,7 +4,8 @@ import { View , Button , Text} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 export default function FromWhen({ navigation }) {
-    const sym = navigation.getParam('symbol');
+    const sym = navigation.getParam('sym');
+    const notificationType = navigation.getParam('notificationType');
     const [FromDate, setDate] = useState(new Date());
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate || FromDate;
@@ -22,7 +23,7 @@ export default function FromWhen({ navigation }) {
             onChange={onChange}
           />
           <Button onPress={() => {
-            navigation.navigate('UntilWhen', {FromDate , sym})
+            navigation.navigate('UntilWhen', {FromDate , sym , notificationType})
             }} title="next"/>
       </View>
     );
