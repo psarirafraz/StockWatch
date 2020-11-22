@@ -19,7 +19,7 @@ export default function stockProfile({ navigation }) {
                 }else if(notificationType==="Limit"){
                   setValue(String(SymbolInfo.fiftyTwoWeekHigh))
                 }
-                console.log(SymbolInfo)
+                // console.log(SymbolInfo)
             })
         })
       }, []);

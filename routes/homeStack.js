@@ -1,8 +1,9 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import React from 'react';
 import Header from '../shared/header.js';
+import NormalHeader from '../shared/NormalHeader.js';
 import Home from '../screens/home';
-import StockProfile from '../screens/StockProfile';
+import StockProfile, {Symbol} from '../screens/StockProfile';
 import FromWhen from '../screens/FromWhen';
 import UntilWhen from '../screens/UntilWhen';
 import NotificationInput from '../screens/NotificationInput';
@@ -18,9 +19,11 @@ const screens = {
   },
   StockProfile: {
     screen: StockProfile,
-    navigationOptions: {
-      title: 'Stock Profile',
-    }
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerTitle: () => <NormalHeader title={navigation.getParam('symbol')} />
+      }
+    },
   },
   FromWhen: {
     screen: FromWhen,
@@ -36,17 +39,19 @@ const screens = {
   },
   NotificationInput: {
     screen: NotificationInput,
-    navigationOptions: {
-      title: 'Set the Price',
-    }
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerTitle: () => <NormalHeader title={navigation.getParam('notificationType')} />
+      }
+    },
   }
 };
 
 // home stack navigator screens
 const HomeStack = createStackNavigator(screens, {
   defaultNavigationOptions: {
-    headerTintColor: '#444',
-    headerStyle: { backgroundColor: '#eee', height: 60 }
+    headerTintColor: '#fff',
+    headerStyle: { backgroundColor: '#000', height: 60}
   }
 });
 

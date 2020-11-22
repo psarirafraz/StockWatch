@@ -16,6 +16,8 @@ const SearchBox = (props) => {
                     keyExtractor={(item) => item.symbol}
                     renderItem={({ item, index, separators }) => (
                         <TouchableHighlight
+                            activeOpacity={0.9}
+                            underlayColor="#fff"
                             key={item.symbol}
                             onPress={() => navigation.navigate('StockProfile', item)}>
                             <View style={styles.resultBoxStyle}>
@@ -39,11 +41,13 @@ const styles = StyleSheet.create({
         top:50
     },
     resultBoxStyle:{
-        padding: 5,
-        borderBottomWidth: 2
+        padding: 10,
+        borderBottomWidth: 2,
+        borderColor: '#fff',
     },
     resultTextStyle:{
-        fontSize: 20
+        fontSize: 20,
+        textAlign: 'center'
     }
 });
 

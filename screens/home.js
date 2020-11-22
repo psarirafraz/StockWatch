@@ -8,17 +8,17 @@ export default function Home({ navigation }) {
     const [modalOpen, setBoxHide] = useState(true);
     const [Symbols, setFoundSymbols] = useState(null);
     const LoadSymbols = (sym) =>{
-        fetch('https://autoc.finance.yahoo.com/autoc?query=' + sym + '&region=1&lang=en')
-        .then(response => response.json())
-        .then(data => setFoundSymbols(data.ResultSet.Result))
-        .catch(error => {
-            console.error('There was an error!', error);
-        });
+      fetch('https://autoc.finance.yahoo.com/autoc?query=' + sym + '&region=1&lang=en')
+      .then(response => response.json())
+      .then(data => setFoundSymbols(data.ResultSet.Result))
+      .catch(error => {
+          console.error('There was an error!', error);
+      });
     };
     const GetSymbols = (text) => {
-        setSearchInputValue(text);
-        LoadSymbols(text);
-        setBoxHide(false);
+      setSearchInputValue(text);
+      LoadSymbols(text);
+      setBoxHide(false);
     };
     const FinishSearch = () => {
         if(Symbols != null && SearchInputValue != ""){
@@ -53,7 +53,7 @@ export default function Home({ navigation }) {
                 autoCorrect={false}
                 onChangeText={text => GetSymbols(text)}
                 value={SearchInputValue}
-                onEndEditing={FinishSearch}
+                onSubmitEditing={FinishSearch}
             />
         </View>
         <SearchBox hide={modalOpen} data={Symbols} navigation={navigation}>
