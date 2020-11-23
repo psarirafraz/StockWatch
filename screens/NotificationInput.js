@@ -1,6 +1,7 @@
 import React, { useState , useEffect} from 'react';
-import { View , TouchableHighlight , TextInput , Text} from 'react-native';
+import { StyleSheet, View , TouchableHighlight , TextInput , Text} from 'react-native';
 import PriceChart from '../shared/PriceChart2.js';
+import { Fontisto } from '@expo/vector-icons';
 
 export default function stockProfile({ navigation }) {
     const sym = navigation.getParam('sym');
@@ -35,8 +36,13 @@ export default function stockProfile({ navigation }) {
             </View>
             <View style={{ flex: 1 , flexDirection: 'row', alignContent:'center', alignSelf:'center'}}>
               <Text style={{ padding: 10, height: 40}}>Set the {notificationType} Price: </Text>
+              <Fontisto 
+                name="dollar"
+                size={24} 
+                style={styles.dollarIcon}
+              />
               <TextInput
-                style={{ height: 40, borderColor: 'gray', borderWidth: 1 , width: 100 }}
+                style={{ height: 40, borderColor: 'gray', borderWidth: 1 , width: 100 , textAlign: 'center' , borderRadius: 5 }}
                 onChangeText={text => setValue(text)}
                 value={value}
                 keyboardType={'decimal-pad'}
@@ -48,3 +54,12 @@ export default function stockProfile({ navigation }) {
       return null;
     }
 }
+
+const styles = StyleSheet.create({
+  dollarIcon:{
+    height: 40,
+    width: 24,
+    paddingLeft: 6,
+    paddingTop: 8
+  }
+});
