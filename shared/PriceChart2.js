@@ -1,7 +1,7 @@
 import React, { useState, useEffect  } from 'react';
 import { View  , StyleSheet , Text, Pressable} from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
-import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
+import { LineChart } from 'react-native-svg-charts'
 import { Dimensions } from 'react-native';
 
 const EarningChart = (props) => {
@@ -16,14 +16,20 @@ const EarningChart = (props) => {
     const [LineDistanceFromLeft , setLineDistanceFromLeft]=useState(0)
     const [msg, setMsg]= useState("Loading...");
     const [Color, setColor]= useState('black');
-    const timestamp = ["9:30","10:00","10:30","11:00","11:30","12:00","12:30","1:00","1:30","2:00","2:30","3:00","3:30","4:00"]
+    // const [CurrentTime, setCurrentTime] = useState("");
+    const [timestamp ,setTimestamp] = useState(null);
+    const [QuoteTime, setQuoteTime] = useState(new Date());
     const [QuotePrice, setQuotePrice] = useState(null);
+    const [SymbolInfo,setSymbolInfo]= useState(null);
     const LoadSymbols = (sym) =>{
         useEffect(() =>{
-            fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range + "&interval=" + interval + "&indicators=quote&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
+            fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
             .then(response => response.json())
             .then(data => {
                 data.chart.result.map(Data =>{
+                    
+                    var arrTime = Data.timestamp
+
                     Data.indicators.quote.map(quotes => {
                         // getting quotes
                         var arr = quotes.close
@@ -37,11 +43,13 @@ const EarningChart = (props) => {
                             }
 
                             setnumberOfQuotes(arr.length)
-                            setLineDistanceFromLeft((numberOfQuotes/numberOfIntervals)*windowWidth)
-                            console.log((numberOfQuotes/numberOfIntervals)*windowWidth)
+                            setLineDistanceFromLeft(((arr.length/numberOfIntervals)*windowWidth)-2)
+
+                            
                             //setting Current Price
                             setCurrentPrice(arr[arr.length-1])
-
+                            setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
+            
                             //changing color baseon increase or decrease
                             if(arr[0]>arr[arr.length-1]){
                                 setColor('red')
@@ -50,31 +58,36 @@ const EarningChart = (props) => {
                             }else{
                                 setColor('black')
                             }
-
+                            
+                            
                             // adding null values for reminding time
                             for (var i = arr.length; i < numberOfIntervals; i++){
                                 arr.push(null)
+                                arrTime.push(null)
                             }
                             setQuotePrice(arr)
+                            setTimestamp(arrTime)
+                            
                         }else{
                             setQuotePrice(null)
                             setMsg("Yahoo API is not available for this Symbol")
                         }
                     })
                     
+                    
                 })
             })
             .catch(error => {
                 console.error('There was an error!', error);
             });
-            // fetch("https://query2.finance.yahoo.com/v7/finance/quote?&symbols="+sym)
-            // .then(res => res.json())
-            // .then(data => {
-            //     data.quoteResponse.result.map(SymbolInfo => {
-            //         setMaxQuote(SymbolInfo.regularMarketDayHigh)
-            //         setMinQuote(SymbolInfo.regularMarketDayLow)
-            //     })
-            // })
+            fetch("https://query2.finance.yahoo.com/v7/finance/quote?&symbols="+sym)
+            .then(res => res.json())
+            .then(data => {
+                data.quoteResponse.result.map(Info => {
+                    setSymbolInfo(Info)
+                    // console.log(Info)
+                })
+            })
 
         }, []);
     };
@@ -88,14 +101,27 @@ const EarningChart = (props) => {
     
     const GetX = (e) => {
         const X = e.nativeEvent.pageX
-        // const windowWidth = Dimensions.get('window').width;
-        setLineDistanceFromLeft(X)
-        // if()
-        setCurrentPrice(QuotePrice[((X/windowWidth)*numberOfIntervals).toFixed(0)])
-        // console.log(QuotePrice)
+        if(QuotePrice[((X/windowWidth)*numberOfIntervals).toFixed(0)]!=null){
+
+            setLineDistanceFromLeft(((X/windowWidth)*numberOfIntervals).toFixed(0)*(windowWidth/numberOfIntervals))
+            setCurrentPrice(QuotePrice[((X/windowWidth)*numberOfIntervals).toFixed(0)])
+
+            setQuoteTime(new Date(timestamp[((X/windowWidth)*numberOfIntervals).toFixed(0)]*1000))
+            if(QuotePrice[0]<QuotePrice[((X/windowWidth)*numberOfIntervals).toFixed(0)]){
+                setColor('green')
+            }else{
+                setColor('red')
+            }
+        }
     }
 
-    if(QuotePrice==null){
+    const LineBackToX = () => {
+        setCurrentPrice(QuotePrice[numberOfQuotes-1])
+        setLineDistanceFromLeft(((numberOfQuotes/numberOfIntervals)*windowWidth)-2)
+        setQuoteTime(new Date(timestamp[timestamp.length-1]*1000))
+    }
+
+    if(QuotePrice==null || SymbolInfo==null){
         return (
             <View style={{ height: 220, flexDirection: 'row' , paddingTop: 5 , display: 'block',alignContent: 'center', alignItems: 'center'}}>
                 <Text style={{textAlign: 'center', alignContent: 'center', width: '100%'}}>{msg}</Text>
@@ -105,15 +131,10 @@ const EarningChart = (props) => {
         return (
             <View>
                 <Pressable 
-                    onPressOut={() => {
-                        setCurrentPrice(QuotePrice[QuotePrice.length-1])
-                        setLineDistanceFromLeft((numberOfQuotes/numberOfIntervals)*windowWidth)
-                    }} 
-                    onTouchEnd={() => {
-                        setCurrentPrice(QuotePrice[QuotePrice.length-1])
-                        setLineDistanceFromLeft((numberOfQuotes/numberOfIntervals)*windowWidth)
-                    }} 
-                    onTouchMove={(e) => GetX(e)}>
+                    onPressOut={() => LineBackToX() } 
+                    onTouchEnd={() => LineBackToX() } 
+                    onTouchMove={(e) => GetX(e)}
+                >
                     <View style={{ height: 220, flexDirection: 'row' , paddingTop: 5 , display: 'block'}}>
                         <View style={{ flex: 1, padding:0}}>
                             <LineChart
@@ -125,7 +146,16 @@ const EarningChart = (props) => {
                         </View>
                     </View>
                 </Pressable>
-                <View style={{position:'absolute' , width:0, height:220, borderWidth:1 ,left:LineDistanceFromLeft}}></View>
+                <View style={{position:'absolute' , width:0, height:210, borderWidth:1 , left:LineDistanceFromLeft , top:5}}></View>
+                <View style={{flexDirection: 'row' }}>
+                    <Text>
+                        {SymbolInfo.shortName}
+                    </Text>
+                    <Text style={{ color:'black' , textAlign:'right' , flex: 1, paddingRight: 10}}>
+                        {QuoteTime.getHours().toString()}:{QuoteTime.getMinutes().toString()
+                        }
+                    </Text>
+                </View>
                 <View style={{flexDirection: 'row' }}>
                     <Fontisto 
                         name="dollar"
@@ -136,6 +166,7 @@ const EarningChart = (props) => {
                     <Text style={{ fontSize: 24 , color:Color , paddingTop: 5 }}>
                         {CurrentPrice.toFixed(4)}
                     </Text>
+                    
                 </View>
             </View>
         );

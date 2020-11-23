@@ -12,8 +12,10 @@ const SearchBox = (props) => {
         return (
             <View style={styles.SearchResultBox}>
                 <FlatList
+                    scrollEnabled='false'
                     data={Data}
                     keyExtractor={(item) => item.symbol}
+                    keyboardShouldPersistTaps='always'
                     renderItem={({ item, index, separators }) => (
                         <TouchableHighlight
                             activeOpacity={0.9}
