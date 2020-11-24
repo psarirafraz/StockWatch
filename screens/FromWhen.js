@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View , Button , Text} from 'react-native';
-// import EarningChart from '../shared/EarningChart.js';
+import { BottonStyles } from '../styles/CommonUI'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 export default function FromWhen({ navigation }) {
@@ -22,9 +22,15 @@ export default function FromWhen({ navigation }) {
             display="default"
             onChange={onChange}
           />
-          <Button onPress={() => {
-            navigation.navigate('UntilWhen', {FromDate , sym , notificationType})
-            }} title="next"/>
+          <View style={BottonStyles.CommonBotton}>
+            <Button
+              color='white'
+              onPress={() => {
+                navigation.navigate('UntilWhen', {FromDate , sym , notificationType})
+              }} 
+              title="next"
+            />
+          </View>
       </View>
     );
 }

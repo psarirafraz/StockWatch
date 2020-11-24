@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View , Button , Text} from 'react-native';
-// import EarningChart from '../shared/EarningChart.js';
+import { BottonStyles } from '../styles/CommonUI'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 export default function stockProfile({ navigation }) {
@@ -22,9 +22,15 @@ export default function stockProfile({ navigation }) {
             display="default"
             onChange={onChange}
           />
-          <Button onPress={() => {
-            navigation.navigate('NotificationInput', {FromDate , sym , UntilDate , notificationType})
-            }} title="next"/>
+          <View style={BottonStyles.CommonBotton}>
+            <Button 
+              onPress={() => {
+                navigation.navigate('NotificationInput', {FromDate , sym , UntilDate , notificationType})
+              }} 
+              title="next"
+              color="white"
+            />
+          </View>
       </View>
     );
 }

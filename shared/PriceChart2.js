@@ -1,6 +1,6 @@
 import React, { useState, useEffect  } from 'react';
 import { View  , StyleSheet , Text, Pressable} from 'react-native';
-import { Fontisto } from '@expo/vector-icons';
+import { Fontisto , AntDesign } from '@expo/vector-icons';
 import { LineChart } from 'react-native-svg-charts'
 import { Dimensions } from 'react-native';
 
@@ -10,17 +10,22 @@ const EarningChart = (props) => {
     const interval = "5m";
     const extended = "false";
     const numberOfIntervals = 78;
+    const [lowestPrice ,setlowestPrice] = useState(0);
+    const [HighestPrice ,setHighestPrice] = useState(0);
     const [numberOfQuotes,setnumberOfQuotes] = useState(0);
     const windowWidth = Dimensions.get('window').width;
-    const [CurrentPrice, setCurrentPrice]=useState(0)
-    const [LineDistanceFromLeft , setLineDistanceFromLeft]=useState(0)
+    const [CurrentPrice, setCurrentPrice] = useState(0)
+    const [LineDistanceFromLeft , setLineDistanceFromLeft] = useState(0)
+    const [diffPrice , setDiffPrice] = useState(0)
+    // const [DotDistanceFromTop , setDotDistanceFromTop] = useState(0)
+    const [UDsign , setUDsign] = useState("caretup");
     const [msg, setMsg]= useState("Loading...");
     const [Color, setColor]= useState('black');
     // const [CurrentTime, setCurrentTime] = useState("");
     const [timestamp ,setTimestamp] = useState(null);
     const [QuoteTime, setQuoteTime] = useState(new Date());
     const [QuotePrice, setQuotePrice] = useState(null);
-    const [SymbolInfo,setSymbolInfo]= useState(null);
+    const [SymbolInfo,setSymbolInfo] = useState(null);
     const LoadSymbols = (sym) =>{
         useEffect(() =>{
             fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
@@ -36,30 +41,37 @@ const EarningChart = (props) => {
 
                         // filling the empty places
                         if(arr!==undefined && arr!==null){
+                            setlowestPrice(arr[0])
+                            setHighestPrice(arr[0])
                             for(var i = 1; i < arr.length; i++){
                                 if(arr[i] == null ){
                                     arr[i]=arr[i-1]
                                 }
+                                if(lowestPrice>arr[i]){
+                                    setlowestPrice(arr[i])
+                                }else if(HighestPrice<arr[i]){
+                                    setHighestPrice(arr[i])
+                                }
                             }
 
                             setnumberOfQuotes(arr.length)
-                            setLineDistanceFromLeft(((arr.length/numberOfIntervals)*windowWidth)-2)
+                            setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
 
                             
                             //setting Current Price
-                            setCurrentPrice(arr[arr.length-1])
                             setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
-            
+
                             //changing color baseon increase or decrease
                             if(arr[0]>arr[arr.length-1]){
                                 setColor('red')
+                                setUDsign('caretdown')
                             }else if(arr[0]<arr[arr.length-1]){
                                 setColor('green')
+                                setUDsign('caretup')
                             }else{
                                 setColor('black')
                             }
-                            
-                            
+                            setDiffPrice(arr[arr.length-1]-arr[0])
                             // adding null values for reminding time
                             for (var i = arr.length; i < numberOfIntervals; i++){
                                 arr.push(null)
@@ -73,8 +85,6 @@ const EarningChart = (props) => {
                             setMsg("Yahoo API is not available for this Symbol")
                         }
                     })
-                    
-                    
                 })
             })
             .catch(error => {
@@ -85,40 +95,49 @@ const EarningChart = (props) => {
             .then(data => {
                 data.quoteResponse.result.map(Info => {
                     setSymbolInfo(Info)
-                    // console.log(Info)
+                    setCurrentPrice(Info.regularMarketPrice)
+                    // setDiffPrice(Info.regularMarketPrice-QuotePrice[0])
                 })
             })
 
         }, []);
     };
 
-    const axesSvg = { fontSize: 5, fill: Color };
     const verticalContentInset = { top: 10, bottom: 10 }
-    const xAxisHeight = 30
-    const contentInset = { top: 20, bottom: 20 }
 
     LoadSymbols(symbol);
     
     const GetX = (e) => {
         const X = e.nativeEvent.pageX
-        if(QuotePrice[((X/windowWidth)*numberOfIntervals).toFixed(0)]!=null){
+        const CurrentIndex = ((X/windowWidth)*numberOfIntervals).toFixed(0)
 
-            setLineDistanceFromLeft(((X/windowWidth)*numberOfIntervals).toFixed(0)*(windowWidth/numberOfIntervals))
-            setCurrentPrice(QuotePrice[((X/windowWidth)*numberOfIntervals).toFixed(0)])
+        if(QuotePrice[CurrentIndex]!=null){
 
-            setQuoteTime(new Date(timestamp[((X/windowWidth)*numberOfIntervals).toFixed(0)]*1000))
-            if(QuotePrice[0]<QuotePrice[((X/windowWidth)*numberOfIntervals).toFixed(0)]){
+            // setLineDistanceFromLeft(CurrentIndex*(windowWidth/numberOfIntervals))
+            setLineDistanceFromLeft(CurrentIndex*(windowWidth/numberOfIntervals))
+            
+            setCurrentPrice(QuotePrice[CurrentIndex])
+
+            setDiffPrice(QuotePrice[CurrentIndex]-QuotePrice[0])
+            // setDotDistanceFromTop((lowestPrice/QuotePrice[CurrentIndex])*220)
+
+            setQuoteTime(new Date(timestamp[CurrentIndex]*1000))
+            if(QuotePrice[0]<QuotePrice[CurrentIndex]){
                 setColor('green')
+                setUDsign('caretup')
             }else{
                 setColor('red')
+                setUDsign('caretdown')
             }
         }
     }
 
     const LineBackToX = () => {
-        setCurrentPrice(QuotePrice[numberOfQuotes-1])
-        setLineDistanceFromLeft(((numberOfQuotes/numberOfIntervals)*windowWidth)-2)
-        setQuoteTime(new Date(timestamp[timestamp.length-1]*1000))
+        
+        setCurrentPrice(SymbolInfo.regularMarketPrice)
+        setLineDistanceFromLeft(((numberOfQuotes-1)/numberOfIntervals)*windowWidth)
+        setQuoteTime(new Date(timestamp[numberOfQuotes-1]*1000))
+        setDiffPrice(QuotePrice[numberOfQuotes-1]-QuotePrice[0])
     }
 
     if(QuotePrice==null || SymbolInfo==null){
@@ -130,6 +149,43 @@ const EarningChart = (props) => {
     }else{
         return (
             <View>
+                <View style={{flexDirection: 'row' , paddingLeft: 5 }}>
+                    <AntDesign
+                        name={UDsign}
+                        style={styles.DiffIcon}
+                        color={Color}
+                    />
+                    <Text style={{ color:Color , paddingTop: 5 }}>
+                        {diffPrice.toFixed(8)}
+                    </Text>
+                    <Text style={{ color:'black' , textAlign:'right' , flex: 1, paddingRight: 10 , paddingTop: 5}}>
+                        {
+                            QuoteTime.getHours().toString()}:{QuoteTime.getMinutes().toString()
+                        }
+                    </Text>
+                </View>
+                <View style={{flexDirection: 'row' }}>
+                    <View style={{ flexDirection:"row" , width: '50%'}}>
+                        <Fontisto 
+                            name="dollar"
+                            size={24} 
+                            style={styles.dollarIcon}
+                            color={Color}
+                        />
+                        <Text style={{ fontSize: 24 , color:Color , paddingTop: 5 }}>
+                            {CurrentPrice.toFixed(4)}
+                        </Text>  
+                    </View>  
+                    <Text style={{flex:1 , flexDirection:"row" , textAlign:'right' ,  paddingRight: 10 , fontSize: 24 , paddingTop: 5 , width: '50%'}}
+                        allowFontScaling={true}
+                        adjustsFontSizeToFit={true}
+                        maxFontSizeMultiplier={24}
+                        numberOfLines={1}
+                    >
+                        {SymbolInfo.shortName}
+                    </Text>
+                    
+                </View>
                 <Pressable 
                     onPressOut={() => LineBackToX() } 
                     onTouchEnd={() => LineBackToX() } 
@@ -146,28 +202,8 @@ const EarningChart = (props) => {
                         </View>
                     </View>
                 </Pressable>
-                <View style={{position:'absolute' , width:0, height:210, borderWidth:1 , left:LineDistanceFromLeft , top:5}}></View>
-                <View style={{flexDirection: 'row' }}>
-                    <Text>
-                        {SymbolInfo.shortName}
-                    </Text>
-                    <Text style={{ color:'black' , textAlign:'right' , flex: 1, paddingRight: 10}}>
-                        {QuoteTime.getHours().toString()}:{QuoteTime.getMinutes().toString()
-                        }
-                    </Text>
-                </View>
-                <View style={{flexDirection: 'row' }}>
-                    <Fontisto 
-                        name="dollar"
-                        size={24} 
-                        style={styles.dollarIcon}
-                        color={Color}
-                    />
-                    <Text style={{ fontSize: 24 , color:Color , paddingTop: 5 }}>
-                        {CurrentPrice.toFixed(4)}
-                    </Text>
-                    
-                </View>
+                <View style={{position:'absolute' , width: 0, height: 210, borderWidth: 1 , left: LineDistanceFromLeft , top: 65 ,borderColor: 'silver'}}/>
+                {/* <View style={{position:'absolute' , width: 8 , height: 8, borderRadius: 8, backgroundColor: Color, left: LineDistanceFromLeft-2.5, top: DotDistanceFromTop}}/> */}
             </View>
         );
     }
@@ -185,6 +221,11 @@ const styles = StyleSheet.create({
         width: 24,
         paddingLeft: 6,
         paddingTop: 8,
+    },
+    DiffIcon:{
+        paddingLeft: 6,
+        width: 24,
+        paddingTop: 7.5
     }
 });
 
