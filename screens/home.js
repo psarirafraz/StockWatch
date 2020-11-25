@@ -20,15 +20,18 @@ export default function Home({ navigation }) {
       LoadSymbols(text);
       setBoxHide(false);
     };
-    // const FinishSearch = () => {
-    //     if(Symbols != null && SearchInputValue != ""){
-    //       Symbols.map(sym =>{
-    //         if(sym.symbol==SearchInputValue.toUpperCase()){
-    //           navigation.navigate('StockProfile', sym)
-    //         }
-    //       })
-    //     }
-    // };
+    const FinishSearch = () => {
+        // if(Symbols != null && SearchInputValue != ""){
+        //   Symbols.map(sym =>{
+        //     if(sym.symbol==SearchInputValue.toUpperCase()){
+        //       navigation.navigate('StockProfile', sym)
+        //     }
+        //   })
+        // }
+        if(SearchInputValue == "" || SearchInputValue == " "){
+          setBoxHide(true);
+        }
+    };
 
     // const Item = ({ symbol }) => (
     //     <View style={styles.item}>
@@ -53,7 +56,7 @@ export default function Home({ navigation }) {
                 autoCorrect={false}
                 onChangeText={text => GetSymbols(text)}
                 value={SearchInputValue}
-                // onSubmitEditing={FinishSearch}
+                onSubmitEditing={FinishSearch}
             />
         </View>
         <SearchBox hide={modalOpen} data={Symbols} navigation={navigation}>

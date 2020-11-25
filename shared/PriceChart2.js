@@ -26,6 +26,7 @@ const EarningChart = (props) => {
     const [QuoteTime, setQuoteTime] = useState(new Date());
     const [QuotePrice, setQuotePrice] = useState(null);
     const [SymbolInfo,setSymbolInfo] = useState(null);
+
     const LoadSymbols = (sym) =>{
         useEffect(() =>{
             fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
@@ -54,11 +55,13 @@ const EarningChart = (props) => {
                                 }
                             }
 
+                            // getting the number of quotes
                             setnumberOfQuotes(arr.length)
-                            setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
 
+                            // setting the initial distance from left
+                            setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
                             
-                            //setting Current Price
+                            // setting Current Price
                             setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
 
                             //changing color baseon increase or decrease
@@ -71,13 +74,20 @@ const EarningChart = (props) => {
                             }else{
                                 setColor('black')
                             }
+
+                            // setting the initial price difference
                             setDiffPrice(arr[arr.length-1]-arr[0])
+
                             // adding null values for reminding time
                             for (var i = arr.length; i < numberOfIntervals; i++){
                                 arr.push(null)
                                 arrTime.push(null)
                             }
+
+                            // getting the array of prices
                             setQuotePrice(arr)
+
+                            // getting the array of timestamp (need to multiply by 1000 to get actual time)
                             setTimestamp(arrTime)
                             
                         }else{
@@ -103,17 +113,191 @@ const EarningChart = (props) => {
         }, []);
     };
 
+    // const ReloadSymbols = (sym) =>{
+    //     // useEffect(() =>{
+    //         await fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             data.chart.result.map(Data =>{
+                    
+    //                 var arrTime = Data.timestamp
+
+    //                 Data.indicators.quote.map(quotes => {
+    //                     // getting quotes
+    //                     var arr = quotes.close
+
+    //                     // filling the empty places
+    //                     if(arr!==undefined && arr!==null){
+    //                         setlowestPrice(arr[0])
+    //                         setHighestPrice(arr[0])
+    //                         for(var i = 1; i < arr.length; i++){
+    //                             if(arr[i] == null ){
+    //                                 arr[i]=arr[i-1]
+    //                             }
+    //                             if(lowestPrice>arr[i]){
+    //                                 setlowestPrice(arr[i])
+    //                             }else if(HighestPrice<arr[i]){
+    //                                 setHighestPrice(arr[i])
+    //                             }
+    //                         }
+
+    //                         // getting the number of quotes
+    //                         setnumberOfQuotes(arr.length)
+
+    //                         // setting the initial distance from left
+    //                         setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
+                            
+    //                         // setting Current Price
+    //                         setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
+
+    //                         //changing color baseon increase or decrease
+    //                         if(arr[0]>arr[arr.length-1]){
+    //                             setColor('red')
+    //                             setUDsign('caretdown')
+    //                         }else if(arr[0]<arr[arr.length-1]){
+    //                             setColor('green')
+    //                             setUDsign('caretup')
+    //                         }else{
+    //                             setColor('black')
+    //                         }
+
+    //                         // setting the initial price difference
+    //                         setDiffPrice(arr[arr.length-1]-arr[0])
+
+    //                         // adding null values for reminding time
+    //                         for (var i = arr.length; i < numberOfIntervals; i++){
+    //                             arr.push(null)
+    //                             arrTime.push(null)
+    //                         }
+
+    //                         // getting the array of prices
+    //                         setQuotePrice(arr)
+
+    //                         // getting the array of timestamp (need to multiply by 1000 to get actual time)
+    //                         setTimestamp(arrTime)
+                            
+    //                     }else{
+    //                         setQuotePrice(null)
+    //                         setMsg("Yahoo API is not available for this Symbol")
+    //                     }
+    //                 })
+    //             })
+    //         })
+    //         .catch(error => {
+    //             console.error('There was an error!', error);
+    //         });
+    //         fetch("https://query2.finance.yahoo.com/v7/finance/quote?&symbols="+sym)
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             data.quoteResponse.result.map(Info => {
+    //                 // setSymbolInfo(Info)
+    //                 setCurrentPrice(Info.regularMarketPrice)
+    //                 // setDiffPrice(Info.regularMarketPrice-QuotePrice[0])
+    //             })
+    //         })
+
+    //     // }, []);
+    // };
+
     const verticalContentInset = { top: 10, bottom: 10 }
 
     LoadSymbols(symbol);
-    
+
+    // setInterval( () => {
+    useEffect(() =>{
+        let rotationInterval = setInterval( () => {
+            fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + symbol + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
+            .then(response => response.json())
+            .then(data => {
+                data.chart.result.map(Data =>{
+                    
+                    var arrTime = Data.timestamp
+
+                    Data.indicators.quote.map(quotes => {
+                        // getting quotes
+                        var arr = quotes.close
+
+                        // filling the empty places
+                        if(arr!==undefined && arr!==null){
+                            setlowestPrice(arr[0])
+                            setHighestPrice(arr[0])
+                            for(var i = 1; i < arr.length; i++){
+                                if(arr[i] == null ){
+                                    arr[i]=arr[i-1]
+                                }
+                                if(lowestPrice>arr[i]){
+                                    setlowestPrice(arr[i])
+                                }else if(HighestPrice<arr[i]){
+                                    setHighestPrice(arr[i])
+                                }
+                            }
+
+                            // getting the number of quotes
+                            setnumberOfQuotes(arr.length)
+
+                            // setting the initial distance from left
+                            setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
+                            
+                            // setting Current Price
+                            setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
+
+                            //changing color baseon increase or decrease
+                            if(arr[0]>arr[arr.length-1]){
+                                setColor('red')
+                                setUDsign('caretdown')
+                            }else if(arr[0]<arr[arr.length-1]){
+                                setColor('green')
+                                setUDsign('caretup')
+                            }else{
+                                setColor('black')
+                            }
+
+                            // setting the initial price difference
+                            setDiffPrice(arr[arr.length-1]-arr[0])
+
+                            // adding null values for reminding time
+                            for (var i = arr.length; i < numberOfIntervals; i++){
+                                arr.push(null)
+                                arrTime.push(null)
+                            }
+
+                            // getting the array of prices
+                            setQuotePrice(arr)
+
+                            // getting the array of timestamp (need to multiply by 1000 to get actual time)
+                            setTimestamp(arrTime)
+                            
+                        }else{
+                            setQuotePrice(null)
+                            setMsg("Yahoo API is not available for this Symbol")
+                        }
+                    })
+                })
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+            fetch("https://query2.finance.yahoo.com/v7/finance/quote?&symbols="+symbol)
+            .then(res => res.json())
+            .then(data => {
+                data.quoteResponse.result.map(Info => {
+                    // setSymbolInfo(Info)
+                    setCurrentPrice(Info.regularMarketPrice)
+                    // setDiffPrice(Info.regularMarketPrice-QuotePrice[0])
+                })
+            })
+        }, 10000);
+        return () => {
+            clearInterval(rotationInterval);
+        }
+    });
+    // }, 30000);
+
     const GetX = (e) => {
         const X = e.nativeEvent.pageX
         const CurrentIndex = ((X/windowWidth)*numberOfIntervals).toFixed(0)
 
         if(QuotePrice[CurrentIndex]!=null){
-
-            // setLineDistanceFromLeft(CurrentIndex*(windowWidth/numberOfIntervals))
             setLineDistanceFromLeft(CurrentIndex*(windowWidth/numberOfIntervals))
             
             setCurrentPrice(QuotePrice[CurrentIndex])
@@ -133,7 +317,6 @@ const EarningChart = (props) => {
     }
 
     const LineBackToX = () => {
-        
         setCurrentPrice(SymbolInfo.regularMarketPrice)
         setLineDistanceFromLeft(((numberOfQuotes-1)/numberOfIntervals)*windowWidth)
         setQuoteTime(new Date(timestamp[numberOfQuotes-1]*1000))
@@ -230,3 +413,4 @@ const styles = StyleSheet.create({
 });
 
 export default EarningChart;
+export const SymbolInfo ={SymbolInfo};

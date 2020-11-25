@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View , StyleSheet , Button} from 'react-native';
-import PriceChart from '../shared/PriceChart2.js';
+import PriceChart , {SymbolInfo} from '../shared/PriceChart2.js';
 import { BottonStyles } from '../styles/CommonUI'
 
 export default function stockProfile({ navigation }) {
@@ -11,6 +11,7 @@ export default function stockProfile({ navigation }) {
           <View>
             <PriceChart symbol={sym}/>
           </View>
+          <Text>{console.log(SymbolInfo)}</Text>
           <View style={BottonStyles.CommonBotton}>
             <Button
               color='white'
