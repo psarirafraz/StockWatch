@@ -7,6 +7,7 @@ import StockProfile, {Symbol} from '../screens/StockProfile';
 import FromWhen from '../screens/FromWhen';
 import UntilWhen from '../screens/UntilWhen';
 import NotificationInput from '../screens/NotificationInput';
+import dividendAnalysis from '../screens/dividendAnalysis';
 
 const screens = {
   Home: {
@@ -44,6 +45,12 @@ const screens = {
         headerTitle: () => <NormalHeader title={navigation.getParam('notificationType')} />
       }
     },
+  },
+  dividendAnalysis: {
+    screen: dividendAnalysis,
+    navigationOptions: {
+      title: 'Dividend Analysis',
+    }
   }
 };
 

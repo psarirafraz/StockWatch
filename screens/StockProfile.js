@@ -1,6 +1,6 @@
 import React from 'react';
-import { View , StyleSheet , Button} from 'react-native';
-import PriceChart , {SymbolInfo} from '../shared/PriceChart2.js';
+import { View , StyleSheet , Button ,Text} from 'react-native';
+import PriceChart , {SymbolInfo} from '../shared/PriceChart.js';
 import { BottonStyles } from '../styles/CommonUI'
 
 export default function stockProfile({ navigation }) {
@@ -11,7 +11,7 @@ export default function stockProfile({ navigation }) {
           <View>
             <PriceChart symbol={sym}/>
           </View>
-          <Text>{console.log(SymbolInfo)}</Text>
+          
           <View style={BottonStyles.CommonBotton}>
             <Button
               color='white'
@@ -24,6 +24,13 @@ export default function stockProfile({ navigation }) {
               color='white'
               title='Stop Notification'
               onPress={() => navigation.navigate('FromWhen', { sym , notificationType:"Stop"})}
+            />
+          </View>
+          <View style={BottonStyles.CommonBotton}>
+            <Button
+              color='white'
+              title='Dividend Analysis'
+              onPress={() => navigation.navigate('dividendAnalysis', { sym })}
             />
           </View>
       </View>

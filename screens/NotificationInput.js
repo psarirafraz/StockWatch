@@ -1,6 +1,6 @@
 import React, { useState , useEffect} from 'react';
 import { StyleSheet, View , TextInput , Text, Button} from 'react-native';
-import PriceChart from '../shared/PriceChart2.js';
+import PriceChart from '../shared/PriceChart.js';
 import { Fontisto } from '@expo/vector-icons';
 import { BottonStyles } from '../styles/CommonUI'
 
