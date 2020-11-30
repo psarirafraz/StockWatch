@@ -1,15 +1,17 @@
 import React, { useState, useEffect  } from 'react';
-import { View  , StyleSheet , Text, Pressable} from 'react-native';
+import { View  , StyleSheet , Text, Pressable, Button} from 'react-native';
 import { Fontisto , AntDesign } from '@expo/vector-icons';
 import { LineChart } from 'react-native-svg-charts'
 import { Dimensions } from 'react-native';
 
 const EarningChart = (props) => {
     const symbol = props.symbol;
-    const range = "1d";
-    const interval = "5m";
+    const range = ["1d", "5d", "1mo", "3mo", "6mo", "ytd", "1y", "2y", "5y", "10y", "max"];
+    const interval = ["1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h", "1d", "5d", "1wk", "1mo", "3mo"];
     const extended = "false";
-    const numberOfIntervals = 78;
+    const [numberOfIntervals, setNumberOfIntervals] = useState(390);
+    const [intervalIndex,setIntervalIndex]=useState(0);
+    const [reangeIndex,setRangeIndex]=useState(0);
     const [lowestPrice ,setlowestPrice] = useState(0);
     const [HighestPrice ,setHighestPrice] = useState(0);
     const [numberOfQuotes,setnumberOfQuotes] = useState(0);
@@ -30,73 +32,77 @@ const EarningChart = (props) => {
     //https://query2.finance.yahoo.com/v8/finance/chart/GECC?formatted=true&includeAdjustedClose=true&interval=1d&period1=1574830664&period2=1606453064&events=div%7Csplit
     const LoadSymbols = (sym) =>{
         useEffect(() =>{
-            fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
+            fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range[reangeIndex] + "&interval=" + interval[intervalIndex] + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
             .then(response => response.json())
             .then(data => {
-                data.chart.result.map(Data =>{
-                    
-                    var arrTime = Data.timestamp
+                if(data.chart.result){
+                    data.chart.result.map(Data =>{
+                        
+                        var arrTime = Data.timestamp
 
-                    Data.indicators.quote.map(quotes => {
-                        // getting quotes
-                        var arr = quotes.close
+                        Data.indicators.quote.map(quotes => {
+                            // getting quotes
+                            var arr = quotes.close
 
-                        // filling the empty places
-                        if(arr!==undefined && arr!==null){
-                            setlowestPrice(arr[0])
-                            setHighestPrice(arr[0])
-                            for(var i = 1; i < arr.length; i++){
-                                if(arr[i] == null ){
-                                    arr[i]=arr[i-1]
+                            // filling the empty places
+                            if(arr!==undefined && arr!==null){
+                                
+                                for(var i = 1; i < arr.length; i++){
+                                    if(arr[i] == null ){
+                                        arr[i]=arr[i-1]
+                                    }
                                 }
-                                if(lowestPrice>arr[i]){
-                                    setlowestPrice(arr[i])
-                                }else if(HighestPrice<arr[i]){
-                                    setHighestPrice(arr[i])
+
+                                // getting the number of quotes
+                                setnumberOfQuotes(arr.length)
+                                if(reangeIndex>=4){
+                                    setNumberOfIntervals(arr.length)
                                 }
-                            }
+                                // setting the initial distance from left
+                                setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
+                                
+                                // setting Current Price
+                                setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
 
-                            // getting the number of quotes
-                            setnumberOfQuotes(arr.length)
+                                //changing color baseon increase or decrease
+                                if(arr[0]>arr[arr.length-1]){
+                                    setColor('red')
+                                    setUDsign('caretdown')
+                                }else if(arr[0]<arr[arr.length-1]){
+                                    setColor('green')
+                                    setUDsign('caretup')
+                                }else{
+                                    setColor('black')
+                                }
 
-                            // setting the initial distance from left
-                            setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
-                            
-                            // setting Current Price
-                            setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
+                                // setting the initial price difference
+                                setDiffPrice(arr[arr.length-1]-arr[0])
 
-                            //changing color baseon increase or decrease
-                            if(arr[0]>arr[arr.length-1]){
-                                setColor('red')
-                                setUDsign('caretdown')
-                            }else if(arr[0]<arr[arr.length-1]){
-                                setColor('green')
-                                setUDsign('caretup')
+                                // adding null values for reminding time
+                                for (var i = arr.length; i < numberOfIntervals; i++){
+                                    arr.push(null)
+                                    arrTime.push(null)
+                                }
+                                
+                                // getting the array of prices
+                                setQuotePrice(arr)
+
+                                // getting the array of timestamp (need to multiply by 1000 to get actual time)
+                                setTimestamp(arrTime)
+                                
                             }else{
-                                setColor('black')
+                                setQuotePrice(null)
+                                setMsg("Yahoo API is not available for this Symbol")
                             }
-
-                            // setting the initial price difference
-                            setDiffPrice(arr[arr.length-1]-arr[0])
-
-                            // adding null values for reminding time
-                            for (var i = arr.length; i < numberOfIntervals; i++){
-                                arr.push(null)
-                                arrTime.push(null)
-                            }
-
-                            // getting the array of prices
-                            setQuotePrice(arr)
-
-                            // getting the array of timestamp (need to multiply by 1000 to get actual time)
-                            setTimestamp(arrTime)
-                            
-                        }else{
-                            setQuotePrice(null)
-                            setMsg("Yahoo API is not available for this Symbol")
-                        }
+                        })
                     })
-                })
+                }else{
+                    console.log(range[reangeIndex])
+                    console.log(interval[intervalIndex])
+                    console.log(data)
+                    setQuotePrice(null)
+                    setMsg("Yahoo API is not available for this Date")   
+                }
             })
             .catch(error => {
                 console.error('There was an error!', error);
@@ -114,91 +120,95 @@ const EarningChart = (props) => {
         }, []);
     };
 
-    // const ReloadSymbols = (sym) =>{
-    //     // useEffect(() =>{
-    //         await fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             data.chart.result.map(Data =>{
-                    
-    //                 var arrTime = Data.timestamp
+    const ReloadSymbols = (sym) =>{
+        // useEffect(() =>{
+            fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + sym + "?range=" + range[reangeIndex] + "&interval=" + interval[intervalIndex] + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
+            .then(response => response.json())
+            .then(data => {
+                if(data.chart.result){
+                    data.chart.result.map(Data =>{
+                        
+                        var arrTime = Data.timestamp
 
-    //                 Data.indicators.quote.map(quotes => {
-    //                     // getting quotes
-    //                     var arr = quotes.close
+                        Data.indicators.quote.map(quotes => {
+                            // getting quotes
+                            var arr = quotes.close
 
-    //                     // filling the empty places
-    //                     if(arr!==undefined && arr!==null){
-    //                         setlowestPrice(arr[0])
-    //                         setHighestPrice(arr[0])
-    //                         for(var i = 1; i < arr.length; i++){
-    //                             if(arr[i] == null ){
-    //                                 arr[i]=arr[i-1]
-    //                             }
-    //                             if(lowestPrice>arr[i]){
-    //                                 setlowestPrice(arr[i])
-    //                             }else if(HighestPrice<arr[i]){
-    //                                 setHighestPrice(arr[i])
-    //                             }
-    //                         }
+                            // filling the empty places
+                            if(arr!==undefined && arr!==null){
+                                
+                                for(var i = 1; i < arr.length; i++){
+                                    if(arr[i] == null ){
+                                        arr[i]=arr[i-1]
+                                    }
+                                }
 
-    //                         // getting the number of quotes
-    //                         setnumberOfQuotes(arr.length)
+                                // getting the number of quotes
+                                setnumberOfQuotes(arr.length)
+                                if(reangeIndex>=4){
+                                    setNumberOfIntervals(arr.length)
+                                }else{
+                                    setNumberOfIntervals(390)
+                                }
+                                // setting the initial distance from left
+                                setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
+                                
+                                // setting Current Price
+                                setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
 
-    //                         // setting the initial distance from left
-    //                         setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
-                            
-    //                         // setting Current Price
-    //                         setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
+                                //changing color baseon increase or decrease
+                                if(arr[0]>arr[arr.length-1]){
+                                    setColor('red')
+                                    setUDsign('caretdown')
+                                }else if(arr[0]<arr[arr.length-1]){
+                                    setColor('green')
+                                    setUDsign('caretup')
+                                }else{
+                                    setColor('black')
+                                }
 
-    //                         //changing color baseon increase or decrease
-    //                         if(arr[0]>arr[arr.length-1]){
-    //                             setColor('red')
-    //                             setUDsign('caretdown')
-    //                         }else if(arr[0]<arr[arr.length-1]){
-    //                             setColor('green')
-    //                             setUDsign('caretup')
-    //                         }else{
-    //                             setColor('black')
-    //                         }
+                                // setting the initial price difference
+                                setDiffPrice(arr[arr.length-1]-arr[0])
 
-    //                         // setting the initial price difference
-    //                         setDiffPrice(arr[arr.length-1]-arr[0])
+                                // adding null values for reminding time
+                                for (var i = arr.length; i < numberOfIntervals; i++){
+                                    arr.push(null)
+                                    arrTime.push(null)
+                                }
+                                
+                                // getting the array of prices
+                                setQuotePrice(arr)
 
-    //                         // adding null values for reminding time
-    //                         for (var i = arr.length; i < numberOfIntervals; i++){
-    //                             arr.push(null)
-    //                             arrTime.push(null)
-    //                         }
+                                // getting the array of timestamp (need to multiply by 1000 to get actual time)
+                                setTimestamp(arrTime)
+                                
+                            }else{
+                                setQuotePrice(null)
+                                setMsg("Yahoo API is not available for this Symbol")
+                            }
+                        })
+                    })
+                }else{
+                    setQuotePrice(null)
+                    console.log(data)
+                    setMsg("Yahoo API is not available for this Date")   
+                }
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+            fetch("https://query2.finance.yahoo.com/v7/finance/quote?&symbols="+sym)
+            .then(res => res.json())
+            .then(data => {
+                data.quoteResponse.result.map(Info => {
+                    setSymbolInfo(Info)
+                    setCurrentPrice(Info.regularMarketPrice)
+                    // setDiffPrice(Info.regularMarketPrice-QuotePrice[0])
+                })
+            })
 
-    //                         // getting the array of prices
-    //                         setQuotePrice(arr)
-
-    //                         // getting the array of timestamp (need to multiply by 1000 to get actual time)
-    //                         setTimestamp(arrTime)
-                            
-    //                     }else{
-    //                         setQuotePrice(null)
-    //                         setMsg("Yahoo API is not available for this Symbol")
-    //                     }
-    //                 })
-    //             })
-    //         })
-    //         .catch(error => {
-    //             console.error('There was an error!', error);
-    //         });
-    //         fetch("https://query2.finance.yahoo.com/v7/finance/quote?&symbols="+sym)
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             data.quoteResponse.result.map(Info => {
-    //                 // setSymbolInfo(Info)
-    //                 setCurrentPrice(Info.regularMarketPrice)
-    //                 // setDiffPrice(Info.regularMarketPrice-QuotePrice[0])
-    //             })
-    //         })
-
-    //     // }, []);
-    // };
+        // }, []);
+    };
 
     const verticalContentInset = { top: 10, bottom: 10 }
 
@@ -207,9 +217,10 @@ const EarningChart = (props) => {
     // setInterval( () => {
     useEffect(() =>{
         let rotationInterval = setInterval( () => {
-            fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + symbol + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
+            fetch("https://query1.finance.yahoo.com/v7/finance/chart/" + symbol + "?range=" + range[reangeIndex] + "&interval=" + interval[intervalIndex] + "&indicators=quote&includeTimestamps=true&includePrePost=" + extended + "&events=div%7Csplit%7Cearn")
             .then(response => response.json())
             .then(data => {
+                if(data.chart.result){
                 data.chart.result.map(Data =>{
                     
                     var arrTime = Data.timestamp
@@ -220,25 +231,24 @@ const EarningChart = (props) => {
 
                         // filling the empty places
                         if(arr!==undefined && arr!==null){
-                            setlowestPrice(arr[0])
-                            setHighestPrice(arr[0])
+                            
                             for(var i = 1; i < arr.length; i++){
                                 if(arr[i] == null ){
                                     arr[i]=arr[i-1]
-                                }
-                                if(lowestPrice>arr[i]){
-                                    setlowestPrice(arr[i])
-                                }else if(HighestPrice<arr[i]){
-                                    setHighestPrice(arr[i])
                                 }
                             }
 
                             // getting the number of quotes
                             setnumberOfQuotes(arr.length)
+                            if(reangeIndex>=4){
+                                setNumberOfIntervals(arr.length)
+                            }else{
+                                setNumberOfIntervals(390)
+                            }
 
                             // setting the initial distance from left
                             setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
-                            
+
                             // setting Current Price
                             setQuoteTime(new Date(arrTime[arrTime.length-1]*1000))
 
@@ -274,6 +284,13 @@ const EarningChart = (props) => {
                         }
                     })
                 })
+            }else{
+                console.log(range[reangeIndex])
+                console.log(interval[intervalIndex])
+                console.log(data)
+                setQuotePrice(null)
+                setMsg("Yahoo API is not available for this Date")
+            }
             })
             .catch(error => {
                 console.error('There was an error!', error);
@@ -387,7 +404,112 @@ const EarningChart = (props) => {
                     </View>
                 </Pressable>
                 <View style={{position:'absolute' , width: 0, height: 210, borderWidth: 1 , left: LineDistanceFromLeft , top: 65 ,borderColor: 'silver'}}/>
-                {/* <View style={{position:'absolute' , width: 8 , height: 8, borderRadius: 8, backgroundColor: Color, left: LineDistanceFromLeft-2.5, top: DotDistanceFromTop}}/> */}
+                <View style={{ height: 50, flexDirection: 'row' , paddingTop: 5 , display: 'block'}}>
+                    <Button 
+                        title="1d"
+                        onPress={()=>{
+                            setIntervalIndex(0);
+                            setRangeIndex(0);
+                            // setNumberOfIntervals(390);
+                            ReloadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="5d"
+                        onPress={()=>{
+                            setIntervalIndex(1);
+                            setRangeIndex(2);
+                            // setNumberOfIntervals(390);
+                            ReloadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="1mo"
+                        onPress={()=>{
+                            setIntervalIndex(2);
+                            setRangeIndex(4);
+                            // setNumberOfIntervals(390);
+                            ReloadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="3mo"
+                        onPress={()=>{
+                            setIntervalIndex(3);
+                            setRangeIndex(6);
+                            // setNumberOfIntervals(390);
+                            ReloadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="6mo"
+                        onPress={()=>{
+                            setIntervalIndex(4);
+                            setRangeIndex(6);
+                            ReloadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="ytd"
+                        onPress={()=>{
+                            setIntervalIndex(5);
+                            setRangeIndex(8);
+                            ReloadSymbols(symbol);
+                            // setNumberOfIntervals(numberOfQuotes);
+                            // LoadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="1y"
+                        onPress={()=>{
+                            setIntervalIndex(6);
+                            setRangeIndex(12);
+                            ReloadSymbols(symbol);
+                            // setNumberOfIntervals(numberOfQuotes);
+                            // LoadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="2y"
+                        onPress={()=>{
+                            setIntervalIndex(7);
+                            setRangeIndex(12);
+                            ReloadSymbols(symbol);
+                            // setNumberOfIntervals(numberOfQuotes);
+                            // LoadSymbols(symbol);
+                        }}
+                    />
+                    <Button
+                        title="5y"
+                        onPress={()=>{
+                            setIntervalIndex(8);
+                            setRangeIndex(13);
+                            ReloadSymbols(symbol);
+                            // setNumberOfIntervals(numberOfQuotes);
+                            // LoadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="10y"
+                        onPress={()=>{
+                            setIntervalIndex(9);
+                            setRangeIndex(14);
+                            ReloadSymbols(symbol);
+                            // setNumberOfIntervals(numberOfQuotes);
+                            // LoadSymbols(symbol);
+                        }}
+                    />
+                    <Button 
+                        title="max"
+                        onPress={()=>{
+                            setIntervalIndex(10);
+                            setRangeIndex(14);
+                            ReloadSymbols(symbol);
+                            // setNumberOfIntervals(numberOfQuotes);
+                            // LoadSymbols(symbol);
+                        }}
+                    />
+                </View>
             </View>
         );
     }
