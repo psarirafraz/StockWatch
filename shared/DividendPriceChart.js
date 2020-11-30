@@ -4,13 +4,20 @@ import { BarChart } from 'react-native-svg-charts'
 import { Dimensions } from 'react-native';
 
 const EarningChart = (props) => {
+    //source https://www.epochconverter.com/
+    const year = 31556926;
+    const month = 2629743;
+    const week = 604800;
+
     const symbol = props.symbol;
-    const period1 = 1574830664;
-    const period2 = (Date.parse(new Date())/1000).toFixed(0);
+    const today = new Date();
+    const period2 = (Date.parse( today ) / 1000 ).toFixed(0);
+    const period1 = ((Date.parse( today ) - ( 2 * year ))/ 1000 ).toFixed(0);;
     // const range = "1d";
     // const interval = "5m";
     // const extended = "false";
     // const numberOfIntervals = 78;
+    
     
     const [numberOfQuotes,setnumberOfQuotes] = useState(0);
     const windowWidth = Dimensions.get('window').width;
