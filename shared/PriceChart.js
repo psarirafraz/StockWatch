@@ -3,6 +3,8 @@ import { View  , StyleSheet , Text, Pressable, Button} from 'react-native';
 import { Fontisto , AntDesign } from '@expo/vector-icons';
 import { LineChart } from 'react-native-svg-charts'
 import { Dimensions } from 'react-native';
+import { block } from 'react-native-reanimated';
+import { State } from 'react-native-gesture-handler';
 
 const EarningChart = (props) => {
     const symbol = props.symbol;
@@ -10,10 +12,10 @@ const EarningChart = (props) => {
     const interval = ["1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h", "1d", "5d", "1wk", "1mo", "3mo"];
     const extended = "false";
     const [numberOfIntervals, setNumberOfIntervals] = useState(390);
-    const [intervalIndex,setIntervalIndex]=useState(0);
-    const [reangeIndex,setRangeIndex]=useState(0);
-    const [lowestPrice ,setlowestPrice] = useState(0);
-    const [HighestPrice ,setHighestPrice] = useState(0);
+    const [intervalIndex,setIntervalIndex] = useState(0);
+    const [reangeIndex,setRangeIndex] = useState(0);
+    // const [lowestPrice ,setlowestPrice] = useState(0);
+    // const [HighestPrice ,setHighestPrice] = useState(0);
     const [numberOfQuotes,setnumberOfQuotes] = useState(0);
     const windowWidth = Dimensions.get('window').width;
     const [CurrentPrice, setCurrentPrice] = useState(0)
@@ -55,9 +57,7 @@ const EarningChart = (props) => {
 
                                 // getting the number of quotes
                                 setnumberOfQuotes(arr.length)
-                                if(reangeIndex>=4){
-                                    setNumberOfIntervals(arr.length)
-                                }
+                                
                                 // setting the initial distance from left
                                 setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
                                 
@@ -145,11 +145,7 @@ const EarningChart = (props) => {
 
                                 // getting the number of quotes
                                 setnumberOfQuotes(arr.length)
-                                if(reangeIndex>=4){
-                                    setNumberOfIntervals(arr.length)
-                                }else{
-                                    setNumberOfIntervals(390)
-                                }
+                                
                                 // setting the initial distance from left
                                 setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
                                 
@@ -189,6 +185,8 @@ const EarningChart = (props) => {
                         })
                     })
                 }else{
+                    console.log(range[reangeIndex])
+                    console.log(interval[intervalIndex])
                     setQuotePrice(null)
                     console.log(data)
                     setMsg("Yahoo API is not available for this Date")   
@@ -240,11 +238,6 @@ const EarningChart = (props) => {
 
                             // getting the number of quotes
                             setnumberOfQuotes(arr.length)
-                            if(reangeIndex>=4){
-                                setNumberOfIntervals(arr.length)
-                            }else{
-                                setNumberOfIntervals(390)
-                            }
 
                             // setting the initial distance from left
                             setLineDistanceFromLeft(((arr.length-1)/numberOfIntervals)*windowWidth)
@@ -285,6 +278,8 @@ const EarningChart = (props) => {
                     })
                 })
             }else{
+                console.log(reangeIndex)
+                console.log(intervalIndex)
                 console.log(range[reangeIndex])
                 console.log(interval[intervalIndex])
                 console.log(data)
@@ -304,7 +299,7 @@ const EarningChart = (props) => {
                     // setDiffPrice(Info.regularMarketPrice-QuotePrice[0])
                 })
             })
-        }, 10000);
+        }, 5000);
         return () => {
             clearInterval(rotationInterval);
         }
@@ -339,6 +334,31 @@ const EarningChart = (props) => {
         setLineDistanceFromLeft(((numberOfQuotes-1)/numberOfIntervals)*windowWidth)
         setQuoteTime(new Date(timestamp[numberOfQuotes-1]*1000))
         setDiffPrice(QuotePrice[numberOfQuotes-1]-QuotePrice[0])
+    }
+
+    const runTheJewls = (id) => {
+        if(id==reangeIndex){
+            return{
+                backgroundColor: "#99ccff",
+                borderRadius: 5,
+                height: 35, 
+                width: 35,
+            }
+        }else{
+            return{
+                borderRadius: 5,
+                height: 35,
+                width: 35,
+            }
+        }
+    }
+
+    const OhhLala = (id) => {
+        if(id==reangeIndex){
+            return("white")
+        }else{
+            return("blue")
+        }
     }
 
     if(QuotePrice==null || SymbolInfo==null){
@@ -405,110 +425,132 @@ const EarningChart = (props) => {
                 </Pressable>
                 <View style={{position:'absolute' , width: 0, height: 210, borderWidth: 1 , left: LineDistanceFromLeft , top: 65 ,borderColor: 'silver'}}/>
                 <View style={{ height: 50, flexDirection: 'row' , paddingTop: 5 , display: 'block'}}>
-                    <Button 
-                        title="1d"
-                        onPress={()=>{
-                            setIntervalIndex(0);
-                            setRangeIndex(0);
-                            // setNumberOfIntervals(390);
-                            ReloadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="5d"
-                        onPress={()=>{
-                            setIntervalIndex(1);
-                            setRangeIndex(2);
-                            // setNumberOfIntervals(390);
-                            ReloadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="1mo"
-                        onPress={()=>{
-                            setIntervalIndex(2);
-                            setRangeIndex(4);
-                            // setNumberOfIntervals(390);
-                            ReloadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="3mo"
-                        onPress={()=>{
-                            setIntervalIndex(3);
-                            setRangeIndex(6);
-                            // setNumberOfIntervals(390);
-                            ReloadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="6mo"
-                        onPress={()=>{
-                            setIntervalIndex(4);
-                            setRangeIndex(6);
-                            ReloadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="ytd"
-                        onPress={()=>{
-                            setIntervalIndex(5);
-                            setRangeIndex(8);
-                            ReloadSymbols(symbol);
-                            // setNumberOfIntervals(numberOfQuotes);
-                            // LoadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="1y"
-                        onPress={()=>{
-                            setIntervalIndex(6);
-                            setRangeIndex(12);
-                            ReloadSymbols(symbol);
-                            // setNumberOfIntervals(numberOfQuotes);
-                            // LoadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="2y"
-                        onPress={()=>{
-                            setIntervalIndex(7);
-                            setRangeIndex(12);
-                            ReloadSymbols(symbol);
-                            // setNumberOfIntervals(numberOfQuotes);
-                            // LoadSymbols(symbol);
-                        }}
-                    />
-                    <Button
-                        title="5y"
-                        onPress={()=>{
-                            setIntervalIndex(8);
-                            setRangeIndex(13);
-                            ReloadSymbols(symbol);
-                            // setNumberOfIntervals(numberOfQuotes);
-                            // LoadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="10y"
-                        onPress={()=>{
-                            setIntervalIndex(9);
-                            setRangeIndex(14);
-                            ReloadSymbols(symbol);
-                            // setNumberOfIntervals(numberOfQuotes);
-                            // LoadSymbols(symbol);
-                        }}
-                    />
-                    <Button 
-                        title="max"
-                        onPress={()=>{
-                            setIntervalIndex(10);
-                            setRangeIndex(14);
-                            ReloadSymbols(symbol);
-                            // setNumberOfIntervals(numberOfQuotes);
-                            // LoadSymbols(symbol);
-                        }}
-                    />
+                    <View style={runTheJewls(0)}>
+                        <Button
+                            style={{fontSize: 3, width: 35}}
+                            color={OhhLala(0)}
+                            title="1d"
+                            onPress={()=>{
+                                setRangeIndex(0)
+                                setIntervalIndex(0)
+                                setNumberOfIntervals(390)
+                                ReloadSymbols(symbol)
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(1)}>
+                        <Button
+                            color={OhhLala(1)}
+                            title="5d"
+                            onPress={()=>{
+                                setRangeIndex(1)
+                                setIntervalIndex(1)
+                                setNumberOfIntervals(975)
+                                ReloadSymbols(symbol)
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(2)}>
+                        <Button 
+                            color={OhhLala(2)}
+                            title="1mo"
+                            onPress={()=>{
+                                setRangeIndex(2)
+                                setIntervalIndex(2)
+                                setNumberOfIntervals(2340)
+                                ReloadSymbols(symbol)
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(3)}>
+                        <Button 
+                            color={OhhLala(3)}
+                            title="3mo"
+                            onPress={()=>{
+                                setRangeIndex(3)
+                                setIntervalIndex(5)
+                                setNumberOfIntervals(1170)
+                                ReloadSymbols(symbol)
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(4)}>
+                        <Button 
+                            color={OhhLala(4)}
+                            title="6mo"
+                            onPress={()=>{
+                                setRangeIndex(4)
+                                setIntervalIndex(5)
+                                setNumberOfIntervals(numberOfQuotes)
+                                ReloadSymbols(symbol)
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(5)}>
+                        <Button 
+                            // style={{fontSize: 3, width: 35}}
+                            // adjustsFontSizeToFit={true}
+                            // allowFontScaling={true}
+                            // maxFontSizeMultiplier={3}
+                            // numberOfLines={1}
+                            title="YTD"
+                            color={OhhLala(5)}
+                            onPress={()=>{
+                                setRangeIndex(5)
+                                setIntervalIndex(8)
+                                ReloadSymbols(symbol)
+                                setNumberOfIntervals(numberOfQuotes)
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(6)}>
+                        <Button 
+                            color={OhhLala(6)}
+                            title="1y"
+                            onPress={()=>{
+                                setRangeIndex(6);
+                                setIntervalIndex(8);
+                                ReloadSymbols(symbol);
+                                setNumberOfIntervals(numberOfQuotes);
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(7)}>
+                        <Button 
+                            title="2y"
+                            color={OhhLala(7)}
+                            onPress={()=>{
+                                setRangeIndex(7);
+                                setIntervalIndex(9);
+                                ReloadSymbols(symbol);
+                                setNumberOfIntervals(numberOfQuotes);
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(8)}>
+                        <Button
+                            title="5y"
+                            color={OhhLala(8)}
+                            onPress={()=>{
+                                setRangeIndex(8);
+                                setIntervalIndex(9);
+                                ReloadSymbols(symbol);
+                                setNumberOfIntervals(numberOfQuotes);
+                            }}
+                        />
+                    </View>
+                    <View style={runTheJewls(9)}>
+                        <Button 
+                            title="10y"
+                            color={OhhLala(9)}
+                            onPress={()=>{
+                                setRangeIndex(9);
+                                setIntervalIndex(10);
+                                ReloadSymbols(symbol);
+                                setNumberOfIntervals(numberOfQuotes);
+                            }}
+                        />
+                    </View>
                 </View>
             </View>
         );
@@ -532,7 +574,16 @@ const styles = StyleSheet.create({
         paddingLeft: 6,
         width: 24,
         paddingTop: 7.5
-    }
+    },
+    // IntervalBoxChose: {
+    //     backgroundColor: "#99ccff",
+    //     borderRadius: 5,
+    //     height: 40
+    // },
+    // IntervalBox:{
+    //     borderRadius: 5,
+    //     height: 40
+    // }
 });
 
 export default EarningChart;
