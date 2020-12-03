@@ -33,7 +33,7 @@ const EarningChart = (props) => {
             .then(response => response.json())
             .then(data => {
                 if(data.chart.result){
-                    setRequestProgress(0.4)
+                    setRequestProgress(0.3)
                     data.chart.result.map(Data =>{
                         
                         var arrTime = Data.timestamp
@@ -44,14 +44,14 @@ const EarningChart = (props) => {
 
                             // filling the empty places
                             if(arr!==undefined && arr!==null){
-                                setRequestProgress(0.5)
+                                setRequestProgress(0.4)
                                 
                                 for(var i = 1; i < arr.length; i++){
                                     if(arr[i] == null ){
                                         arr[i]=arr[i-1]
                                     }
                                 }
-                                setRequestProgress(0.8)
+                                setRequestProgress(0.6)
                                 // getting the number of quotes
                                 setnumberOfQuotes(arr.length)
                                 
@@ -81,7 +81,7 @@ const EarningChart = (props) => {
                                 // setting the initial price difference
                                 setDiffPrice(arr[arr.length-1]-arr[0])
 
-                                setRequestProgress(0.9)
+                                setRequestProgress(0.7)
 
                                 // adding null values for reminding time
                                 for (var i = arr.length; i < numberOfIntervals; i++){
@@ -95,7 +95,7 @@ const EarningChart = (props) => {
                                 // getting the array of timestamp (need to multiply by 1000 to get actual time)
                                 setTimestamp(arrTime)
 
-                                setRequestProgress(1.0)
+                                
                                 
                             }else{
                                 setQuotePrice(null)
@@ -107,6 +107,9 @@ const EarningChart = (props) => {
                     setQuotePrice(null)
                     setMsg("Yahoo API is not available for this Date")   
                 }
+            })
+            .then(()=>{
+                setRequestProgress(1.0)
             })
             .catch(error => {
                 console.error('There was an error!', error);
@@ -132,7 +135,7 @@ const EarningChart = (props) => {
         .then(data => {
             if(data.chart.result){
                 
-                setRequestProgress(0.4)
+                setRequestProgress(0.3)
 
                 data.chart.result.map(Data =>{
                     
@@ -145,7 +148,7 @@ const EarningChart = (props) => {
                         // filling the empty places
                         if(arr!==undefined && arr!==null){
 
-                            setRequestProgress(0.5)
+                            setRequestProgress(0.4)
 
                             for(var i = 1; i < arr.length; i++){
                                 if(arr[i] == null ){
@@ -153,7 +156,7 @@ const EarningChart = (props) => {
                                 }
                             }
 
-                            setRequestProgress(0.8)
+                            setRequestProgress(0.7)
 
                             // getting the number of quotes
                             setnumberOfQuotes(arr.length)
@@ -183,7 +186,7 @@ const EarningChart = (props) => {
                             // setting the initial price difference
                             setDiffPrice(arr[arr.length-1]-arr[0])
                             
-                            setRequestProgress(0.9)
+                            setRequestProgress(0.7)
                             // adding null values for reminding time
                             for (var i = arr.length; i < numberOfIntervals; i++){
                                 arr.push(null)
@@ -196,7 +199,7 @@ const EarningChart = (props) => {
                             // getting the array of timestamp (need to multiply by 1000 to get actual time)
                             setTimestamp(arrTime)
 
-                            setRequestProgress(1.0)
+                            
                             
                         }else{
                             setQuotePrice(null)
@@ -208,6 +211,9 @@ const EarningChart = (props) => {
                 setQuotePrice(null)
                 setMsg("Yahoo API is not available for this Date")   
             }
+        })
+        .then(()=>{
+            setRequestProgress(1.0)
         })
         .catch(error => {
             console.error('There was an error!', error);
@@ -311,7 +317,7 @@ const EarningChart = (props) => {
                     setCurrentPrice(Info.regularMarketPrice)
                 })
             })
-        }, 5000);
+        }, 2000);
         return () => {
             clearInterval(rotationInterval);
         }
@@ -381,15 +387,170 @@ const EarningChart = (props) => {
         }
     }
 
-    if(QuotePrice==null || SymbolInfo==null){
+    if(QuotePrice==null || SymbolInfo==null || RequestProgress < 1.0){
         if(msg==="Loading..."){
             return (
-                <View style={{ height: 330, flexDirection: 'row' , paddingTop: 5 , display: 'block',alignContent: 'center', alignItems: 'center'}}>
-                    <Text style={{textAlign: 'center', alignContent: 'center', width: '100%', position: "absolute"}}>{msg}</Text>
-                    <ProgressCircle
-                        style={{ height: '100%',width: '100%', alignContent:'center', alignItems: 'center', alignItems: 'center' }} progress={RequestProgress} progressColor={'rgb(134, 65, 244)'} startAngle={ 0 } endAngle={ Math.PI * 2 }
-                    />
-                </View>
+                <>
+                    <View style={{ height: 282.5, flexDirection: 'row' , paddingTop: 5 , display: 'block',alignContent: 'center', alignItems: 'center'}}>
+                        <Text style={{textAlign: 'center', alignContent: 'center', width: '100%', position: "absolute"}}>{msg}</Text>
+                        <ProgressCircle
+                            style={{ height: 150,width: 150, alignContent:'center', alignItems: 'center', alignItems: 'center', marginLeft:110}} progress={RequestProgress} progressColor={'rgb(134, 65, 244)'} startAngle={ 0 } endAngle={ Math.PI * 2 }
+                        />
+                    </View>
+                    <View style={{ height: 50, flexDirection: 'row' , padding: 5 , display: 'block'}}> 
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=0){
+                                    setRangeIndex(0)
+                                    setIntervalIndex(0)
+                                    setNumberOfIntervals(390)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(0)}>
+                                <Text style={OhhLala(0)}>
+                                    1d
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=1){
+                                    setRangeIndex(1)
+                                    setIntervalIndex(1)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(1)}>
+                                <Text style={OhhLala(1)}>
+                                    5d
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=2){
+                                    setRangeIndex(2)
+                                    setIntervalIndex(2)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(2)}>
+                                <Text style={OhhLala(2)}>
+                                    1m
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=3){
+                                    setRangeIndex(3)
+                                    setIntervalIndex(5)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(3)}>
+                                <Text style={OhhLala(3)}>
+                                    3m
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=4){
+                                    setRangeIndex(4)
+                                    setIntervalIndex(5)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(4)}>
+                                <Text style={OhhLala(4)}>
+                                    6m
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=5){
+                                    setRangeIndex(5)
+                                    setIntervalIndex(8)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(5)}>
+                                <Text style={OhhLala(5)}>
+                                    ytd
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=6){
+                                    setRangeIndex(6)
+                                    setIntervalIndex(8)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(6)}>
+                                <Text style={OhhLala(6)}>
+                                    1y
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=7){
+                                    setRangeIndex(7)
+                                    setIntervalIndex(9)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(7)}>
+                                <Text style={OhhLala(7)}>
+                                    2y
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=8){
+                                    setRangeIndex(8)
+                                    setIntervalIndex(9)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(8)}>
+                                <Text style={OhhLala(8)}>
+                                    5y
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{flex: 1}}
+                            onPress={()=>{
+                                if(reangeIndex!=9){
+                                    setRangeIndex(9)
+                                    setIntervalIndex(10)
+                                    ReloadSymbols(symbol)
+                                }}}
+                            >
+                            <View style={runTheJewls(9)}>
+                                <Text style={OhhLala(9)}>
+                                    10y
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </>
             );
         }else{
             return (
@@ -445,8 +606,8 @@ const EarningChart = (props) => {
                                 data={QuotePrice}
                                 contentInset={verticalContentInset}
                                 svg={{ stroke: Color }}
-                                animate={true}
-                                // animationDuration={0}
+                                // animate={true}
+                                numberOfTicks={numberOfIntervals}
                                 />
                         </View>
                     </View>

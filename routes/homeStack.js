@@ -2,11 +2,13 @@ import { createStackNavigator } from 'react-navigation-stack';
 import React from 'react';
 import Header from '../shared/header.js';
 import NormalHeader from '../shared/NormalHeader.js';
+import ProfileHeader from '../shared/ProfileHeader.js';
 import Home from '../screens/home';
 import StockProfile, {Symbol} from '../screens/StockProfile';
 import FromWhen from '../screens/FromWhen';
 import UntilWhen from '../screens/UntilWhen';
 import NotificationInput from '../screens/NotificationInput';
+import ChooseNotificationType from '../screens/ChooseNotificationType';
 import dividendAnalysis from '../screens/dividendAnalysis';
 
 const screens = {
@@ -22,7 +24,7 @@ const screens = {
     screen: StockProfile,
     navigationOptions: ({ navigation }) => {
       return {
-        headerTitle: () => <NormalHeader title={navigation.getParam('symbol')} />
+        headerTitle: () => <ProfileHeader title={navigation.getParam('symbol')} navigation={navigation}/>
       }
     },
   },
@@ -45,6 +47,12 @@ const screens = {
         headerTitle: () => <NormalHeader title={navigation.getParam('notificationType')} />
       }
     },
+  },
+  ChooseNotificationType: {
+    screen: ChooseNotificationType,
+    navigationOptions: {
+      title: 'Notification',
+    }
   },
   dividendAnalysis: {
     screen: dividendAnalysis,

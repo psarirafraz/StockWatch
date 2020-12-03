@@ -11,21 +11,6 @@ export default function stockProfile({ navigation }) {
           <View>
             <PriceChart symbol={sym}/>
           </View>
-          
-          <View style={BottonStyles.CommonBotton}>
-            <Button
-              color='white'
-              title='Limit Notification'
-              onPress={() => navigation.navigate('FromWhen', { sym , notificationType:"Limit"})}
-            />
-          </View>
-          <View style={BottonStyles.CommonBotton}>
-            <Button
-              color='white'
-              title='Stop Notification'
-              onPress={() => navigation.navigate('FromWhen', { sym , notificationType:"Stop"})}
-            />
-          </View>
           <View style={BottonStyles.CommonBotton}>
             <Button
               color='white'
@@ -33,8 +18,6 @@ export default function stockProfile({ navigation }) {
               onPress={() => navigation.navigate('dividendAnalysis', { sym })}
             />
           </View>
-          {//console.log(PriceChart)
-          }
       </View>
     );
 }
