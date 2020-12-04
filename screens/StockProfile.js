@@ -1,6 +1,7 @@
 import React from 'react';
 import { View , StyleSheet , Button ,Text} from 'react-native';
 import PriceChart from '../shared/PriceChart.js';
+import StockInfo from '../shared/StockInfo.js';
 import { BottonStyles } from '../styles/CommonUI'
 
 export default function stockProfile({ navigation }) {
@@ -11,6 +12,7 @@ export default function stockProfile({ navigation }) {
           <View>
             <PriceChart symbol={sym}/>
           </View>
+          <StockInfo symbol={sym}/>
           <View style={BottonStyles.CommonBotton}>
             <Button
               color='white'
