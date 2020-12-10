@@ -2,16 +2,53 @@ import React, { useState, useEffect } from 'react';
 import { View , StyleSheet ,Text} from 'react-native';
 
 const TableRow = (props) => {
+    const reduceTheNumber = (value) =>{
+        if(Number.isInteger(value) && value > 1000000000){
+            return (value/1000000000).toFixed(1)+"b"
+        }else if(Number.isInteger(value) && value > 1000000){
+            return (value/1000000).toFixed(1)+"m"
+        }else{
+            return value
+        }
+    }
     const CellTitle1 = props.CellTitle1;
-    const CellInfo1 = props.CellInfo1;
+    const CellInfo1 = reduceTheNumber(props.CellInfo1);
     const CellTitle2 = props.CellTitle2;
-    const CellInfo2 = props.CellInfo2;
+    const CellInfo2 = reduceTheNumber(props.CellInfo2);
     return(
         <View style={{flexDirection:'row'}}>
-            <View style={styles.TableTitleCell}><Text>{CellTitle1}</Text></View>
-            <View style={styles.TableInfoCell}><Text style={styles.TableInfoText}>{CellInfo1}</Text></View>
-            <View style={styles.TableTitleCell}><Text>{CellTitle2}</Text></View>
-            <View style={styles.TableInfoCell}><Text style={styles.TableInfoText}>{CellInfo2}</Text></View>
+            <View style={{flex:1, flexDirection: 'row'}}>
+                <View style={styles.TableTitleCell}>
+                    <Text 
+                        allowFontScaling={true}
+                        adjustsFontSizeToFit={true}
+                        maxFontSizeMultiplier={24}
+                        numberOfLines={1}>
+                        {CellTitle1}
+                    </Text>
+                </View>
+                <View style={styles.TableInfoCell}>
+                    <Text style={styles.TableInfoText}>
+                        {CellInfo1}
+                    </Text>
+                </View>
+            </View>
+            <View style={{flex:1, flexDirection: 'row'}}>
+                <View style={styles.TableTitleCell}>
+                    <Text 
+                        allowFontScaling={true}
+                        adjustsFontSizeToFit={true}
+                        maxFontSizeMultiplier={24}
+                        numberOfLines={1}>
+                        {CellTitle2}
+                    </Text>
+                </View>
+                <View style={styles.TableInfoCell}>
+                    <Text style={styles.TableInfoText}>
+                        {CellInfo2}
+                    </Text>
+                </View>
+            </View>
         </View>
     );
 }
@@ -26,6 +63,7 @@ const StockInfo = (props) =>{
             .then(response => response.json())
             .then(data => {
                 data.quoteResponse.result.map(Data =>{
+                    console.log(Data)
                     setInfo(Data)
                 })
             })
@@ -39,10 +77,13 @@ const StockInfo = (props) =>{
         return(
             <View style={{flexDirection: 'column'}}>
                 <View style={{flexDirection:'row'}}>
-                    <Text style={{textAlign:'center' , flex: 1, marginBottom: 10, fontSize: 18}}>Stock Information</Text>
+                    <Text style={{textAlign:'center' , flex: 1, marginBottom: 20, fontSize: 18}}>Stock Information</Text>
                 </View>
-                <TableRow CellTitle1="working" CellInfo1="!" CellTitle1="Ask" CellInfo1={info.askSize+" x "+info.ask}/>
-                <TableRow CellTitle1="working" CellInfo1="!" CellTitle1="Bid" CellInfo1={info.bidSize+" x "+info.bid}/>
+                <TableRow CellTitle2="Market Cap." CellInfo2={info.marketCap} CellTitle1="Ask" CellInfo1={info.askSize+" x "+info.ask}/>
+                <TableRow CellTitle2="Volume" CellInfo2={info.regularMarketVolume} CellTitle1="Bid" CellInfo1={info.bidSize+" x "+info.bid}/>
+                <TableRow CellTitle1="Today High" CellInfo1={info.regularMarketDayHigh} CellTitle2="52w High" CellInfo2={info.fiftyTwoWeekHigh}/>
+                <TableRow CellTitle1="Today Low" CellInfo1={info.regularMarketDayLow} CellTitle2="52w Low" CellInfo2={info.fiftyTwoWeekLow}/>
+                <TableRow CellTitle1="Ex.divid" CellInfo1={(new Date(info.dividendDate*1000).getMonth()+1)+"/"+new Date(info.dividendDate*1000).getDate()+"/"+new Date(info.dividendDate*1000).getFullYear()} CellTitle2="1 year divid" CellInfo2={info.trailingAnnualDividendRate} />
             </View>
         );
     }else{
@@ -54,16 +95,18 @@ const StockInfo = (props) =>{
 
 const styles = StyleSheet.create({
     TableTitleCell:{
-        flex: 1,
-        height: 25,
-        paddingLeft: 15
+        flex: 2,
+        height: 35,
+        paddingLeft: 10,
+        textAlignVertical: 'center',
+        textAlign: 'center'
     },
     TableInfoCell:{
-        flex: 2,
-        height: 25
+        flex: 3,
+        height: 35
     },
     TableInfoText:{
-        textAlign: 'center'
+        textAlign: 'center',
     }
 })
 
