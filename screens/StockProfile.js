@@ -1,5 +1,5 @@
 import React from 'react';
-import { View , StyleSheet , Button ,Text} from 'react-native';
+import { View , StyleSheet , Button , ScrollView} from 'react-native';
 import PriceChart from '../shared/PriceChart.js';
 import StockInfo from '../shared/StockInfo.js';
 import { BottonStyles } from '../styles/CommonUI'
@@ -8,7 +8,7 @@ export default function stockProfile({ navigation }) {
     const sym = navigation.getParam('symbol');
     
     return (
-      <View>
+      <ScrollView>
           <View>
             <PriceChart symbol={sym}/>
           </View>
@@ -20,7 +20,7 @@ export default function stockProfile({ navigation }) {
               onPress={() => navigation.navigate('dividendAnalysis', { sym })}
             />
           </View>
-      </View>
+      </ScrollView>
     );
 }
 

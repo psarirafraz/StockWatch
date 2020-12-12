@@ -7,7 +7,10 @@ const TableRow = (props) => {
             return (value/1000000000).toFixed(1)+"b"
         }else if(Number.isInteger(value) && value > 1000000){
             return (value/1000000).toFixed(1)+"m"
+        }if(value%1!=0 && value < 1000){
+            return (value).toFixed(2)
         }else{
+            console.log(value)
             return value
         }
     }
@@ -76,8 +79,10 @@ const StockInfo = (props) =>{
     if(info!=null){
         return(
             <View style={{flexDirection: 'column'}}>
-                <View style={{flexDirection:'row'}}>
-                    <Text style={{textAlign:'center' , flex: 1, marginBottom: 20, fontSize: 18}}>Stock Information</Text>
+                <View style={{flexDirection:'row' , marginBottom: 20}}>
+                    <View style={{flex:1}}/>
+                    <View style={{ borderBottomColor: 'black', borderBottomWidth: 1 , flex: 2, paddingBottom: 10}}><Text style={{textAlign:'center', fontSize: 18}}>Stock Information</Text></View>
+                    <View style={{flex:1}}/>
                 </View>
                 <TableRow CellTitle2="Market Cap." CellInfo2={info.marketCap} CellTitle1="Ask" CellInfo1={info.askSize+" x "+info.ask}/>
                 <TableRow CellTitle2="Volume" CellInfo2={info.regularMarketVolume} CellTitle1="Bid" CellInfo1={info.bidSize+" x "+info.bid}/>
@@ -96,14 +101,21 @@ const StockInfo = (props) =>{
 const styles = StyleSheet.create({
     TableTitleCell:{
         flex: 2,
-        height: 35,
-        paddingLeft: 10,
+        height: 25,
+        marginBottom: 10,
+        marginLeft: 20,
         textAlignVertical: 'center',
-        textAlign: 'center'
+        textAlign: 'center',
+        borderBottomColor: 'black',
+        borderBottomWidth: 1
     },
     TableInfoCell:{
         flex: 3,
-        height: 35
+        height: 25,
+        marginRight: 20,
+        marginBottom: 10,
+        borderBottomColor: 'black',
+        borderBottomWidth: 1
     },
     TableInfoText:{
         textAlign: 'center',

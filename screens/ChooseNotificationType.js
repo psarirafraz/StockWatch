@@ -1,12 +1,12 @@
 import React from 'react';
-import { View , StyleSheet , TouchableOpacity, Text} from 'react-native';
+import { View , StyleSheet , TouchableOpacity, Text, ScrollView} from 'react-native';
 import { MaterialIcons,FontAwesome } from '@expo/vector-icons';
 
 export default function ChooseNotificationType({ navigation }) {
     const sym = navigation.getParam('title');
     
     return (
-      <View style={{flex: 1 , padding: 20}}>
+      <ScrollView style={{flex: 1 , padding: 20}}>
           <TouchableOpacity onPress={() => navigation.navigate('FromWhen', { sym , notificationType:"Limit"})}>
               <View style={styles.notifiTypeBox}>
                 <View style={styles.IconsBox}>
@@ -58,11 +58,11 @@ export default function ChooseNotificationType({ navigation }) {
           <TouchableOpacity onPress={() => {}}>
               <View style={styles.notifiTypeBox}>
                 <View style={styles.IconsBox}>
-                    <FontAwesome style={{marginTop: 12.5}} name="newspaper-o" size={50} color="black" />
+                    <FontAwesome style={{marginTop: 12.5}} name="newspaper-o" size={50} color="#00b3b3" />
                 </View>
                 <View style={styles.NotifiExplnation}>
                     <View style={styles.TitleBox}>
-                        <Text style={{fontSize: 18, color: 'green'}}>
+                        <Text style={{fontSize: 18, color: '#00b3b3'}}>
                             News
                         </Text>
                     </View>
@@ -79,7 +79,7 @@ export default function ChooseNotificationType({ navigation }) {
                 </View>
               </View>
           </TouchableOpacity>
-      </View>
+      </ScrollView>
     );
 }
 

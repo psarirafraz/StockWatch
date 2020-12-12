@@ -1,5 +1,5 @@
 import React, { useState, useEffect  } from 'react';
-import { View  , StyleSheet , Text, Pressable , TouchableOpacity} from 'react-native';
+import { View  , StyleSheet , Text, Pressable , TouchableOpacity } from 'react-native';
 import { Fontisto , AntDesign } from '@expo/vector-icons';
 import { LineChart , ProgressCircle } from 'react-native-svg-charts'
 import { Dimensions } from 'react-native';
@@ -561,7 +561,7 @@ const EarningChart = (props) => {
         }
     }else{
         return (
-            <View>
+            <>
                 <View style={{flexDirection: 'row' , paddingLeft: 5 }}>
                     <AntDesign
                         name={UDsign}
@@ -766,7 +766,7 @@ const EarningChart = (props) => {
                         </View>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </>
         );
     }
 };
