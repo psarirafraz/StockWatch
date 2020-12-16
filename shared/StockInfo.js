@@ -10,7 +10,7 @@ const TableRow = (props) => {
         }if(value%1!=0 && value < 1000){
             return (value).toFixed(2)
         }else{
-            console.log(value)
+            // console.log(value)
             return value
         }
     }
@@ -56,6 +56,16 @@ const TableRow = (props) => {
     );
 }
 
+const TableHeader = (props) =>{
+    return(
+        <View style={{flexDirection:'row' , marginBottom: 20, marginTop:20}}>
+            <View style={{flex:1}}/>
+            <View style={{ borderBottomColor: 'black', borderBottomWidth: 1 , flex: 2, paddingBottom: 10}}><Text style={{textAlign:'center', fontSize: 18}}>{props.title}</Text></View>
+            <View style={{flex:1}}/>
+        </View>
+    );
+}
+
 const StockInfo = (props) =>{
     const symbol = props.symbol;
     const [info, setInfo] = useState(null);
@@ -79,21 +89,20 @@ const StockInfo = (props) =>{
     if(info!=null){
         return(
             <View style={{flexDirection: 'column'}}>
-                <View style={{flexDirection:'row' , marginBottom: 20}}>
-                    <View style={{flex:1}}/>
-                    <View style={{ borderBottomColor: 'black', borderBottomWidth: 1 , flex: 2, paddingBottom: 10}}><Text style={{textAlign:'center', fontSize: 18}}>Stock Information</Text></View>
-                    <View style={{flex:1}}/>
-                </View>
+                <TableHeader title="Price Information"/>
                 <TableRow CellTitle2="Market Cap." CellInfo2={info.marketCap} CellTitle1="Ask" CellInfo1={info.askSize+" x "+info.ask}/>
                 <TableRow CellTitle2="Volume" CellInfo2={info.regularMarketVolume} CellTitle1="Bid" CellInfo1={info.bidSize+" x "+info.bid}/>
                 <TableRow CellTitle1="Today High" CellInfo1={info.regularMarketDayHigh} CellTitle2="52w High" CellInfo2={info.fiftyTwoWeekHigh}/>
                 <TableRow CellTitle1="Today Low" CellInfo1={info.regularMarketDayLow} CellTitle2="52w Low" CellInfo2={info.fiftyTwoWeekLow}/>
-                <TableRow CellTitle1="Ex.divid" CellInfo1={(new Date(info.dividendDate*1000).getMonth()+1)+"/"+new Date(info.dividendDate*1000).getDate()+"/"+new Date(info.dividendDate*1000).getFullYear()} CellTitle2="1 year divid" CellInfo2={info.trailingAnnualDividendRate} />
+                {/* <TableRow CellTitle1="Ex.divid" CellInfo1={(new Date(info.dividendDate*1000).getMonth()+1)+"/"+new Date(info.dividendDate*1000).getDate()+"/"+new Date(info.dividendDate*1000).getFullYear()} CellTitle2="1 year divid" CellInfo2={info.trailingAnnualDividendRate} /> */}
+                <TableHeader title="Earnings Information"/>
             </View>
         );
     }else{
         return(
-            <Text>Loading...</Text>
+            <View style={{flexDirection: 'column'}}>
+                <Text style={{textAlign:'center'}}>Loading...</Text>
+            </View>
         );
     }
 }
@@ -106,19 +115,19 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         textAlignVertical: 'center',
         textAlign: 'center',
-        borderBottomColor: 'black',
-        borderBottomWidth: 1
+        // borderBottomColor: 'black',
+        // borderBottomWidth: 1
     },
     TableInfoCell:{
         flex: 3,
         height: 25,
         marginRight: 20,
         marginBottom: 10,
-        borderBottomColor: 'black',
-        borderBottomWidth: 1
+        // borderBottomColor: 'black',
+        // borderBottomWidth: 1
     },
     TableInfoText:{
-        textAlign: 'center',
+        textAlign: "right",
     }
 })
 

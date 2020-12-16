@@ -27,6 +27,7 @@
     "react-navigation": "^4.4.3",
     "react-navigation-drawer": "^2.6.0",
     "react-navigation-stack": "^2.10.0",
+    "use-force-update": "^1.0.7",
     "victory-native": "^35.3.1"
   },
   "devDependencies": {

@@ -1,8 +1,9 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View  , StyleSheet , Text, Pressable , TouchableOpacity } from 'react-native';
 import { Fontisto , AntDesign } from '@expo/vector-icons';
 import { LineChart , ProgressCircle } from 'react-native-svg-charts'
 import { Dimensions } from 'react-native';
+import useForceUpdate from 'use-force-update';
 
 
 const EarningChart = (props) => {
@@ -26,6 +27,15 @@ const EarningChart = (props) => {
     const [QuotePrice, setQuotePrice] = useState(null);
     const [SymbolInfo, setSymbolInfo] = useState(null);
     const [RequestProgress, setRequestProgress]= useState(0);
+    const forceUpdate = useForceUpdate();
+
+    const addZeroToMin = (min) => {
+        if(min > 9){
+            return min;
+        }else{
+            return 0+min;
+        }
+    }
 
     const LoadSymbols = (sym) =>{
         useEffect(() =>{
@@ -109,6 +119,7 @@ const EarningChart = (props) => {
                 }
             })
             .then(()=>{
+                // loadingAnimation()
                 setRequestProgress(1.0)
             })
             .catch(error => {
@@ -199,8 +210,12 @@ const EarningChart = (props) => {
                             // getting the array of timestamp (need to multiply by 1000 to get actual time)
                             setTimestamp(arrTime)
 
-                            
-                            
+                            // for(var i = 1; i<=200;i++){
+                            //     setInterval(()=>{
+                            //         setRequestProgress(0.7+(0.0015*i))
+                            //     },1000)
+                            // }
+
                         }else{
                             setQuotePrice(null)
                             setMsg("Yahoo API is not available for this Symbol")
@@ -213,7 +228,7 @@ const EarningChart = (props) => {
             }
         })
         .then(()=>{
-            setRequestProgress(1.0)
+           setRequestProgress(1.0)
         })
         .catch(error => {
             console.error('There was an error!', error);
@@ -571,7 +586,7 @@ const EarningChart = (props) => {
                         {diffPrice.toFixed(8)}
                     </Text>
                     <Text style={{ color:'black' , textAlign:'right' , flex: 1, paddingRight: 10 , paddingTop: 5}}>
-                        {(QuoteTime.getMonth()+1).toString()} / {QuoteTime.getDate().toString()} / {QuoteTime.getFullYear().toString()}      {QuoteTime.getHours().toString()}:{QuoteTime.getMinutes().toString()}
+                        {(QuoteTime.getMonth()+1).toString()} / {QuoteTime.getDate().toString()} / {QuoteTime.getFullYear().toString()}      {QuoteTime.getHours().toString()}:{addZeroToMin(QuoteTime.getMinutes().toString())}
                     </Text>
                 </View>
                 <View style={{flexDirection: 'row' }}>
@@ -607,8 +622,8 @@ const EarningChart = (props) => {
                                 contentInset={verticalContentInset}
                                 svg={{ stroke: Color }}
                                 // animate={true}
-                                numberOfTicks={numberOfIntervals}
-                                />
+                                // numberOfTicks={numberOfIntervals}
+                            />
                         </View>
                     </View>
                 </Pressable>
@@ -622,6 +637,7 @@ const EarningChart = (props) => {
                                 setIntervalIndex(0)
                                 setNumberOfIntervals(390)
                                 ReloadSymbols(symbol)
+                                // forceUpdate()
                             }}}
                         >
                         <View style={runTheJewls(0)}>
@@ -637,6 +653,7 @@ const EarningChart = (props) => {
                                 setRangeIndex(1)
                                 setIntervalIndex(1)
                                 ReloadSymbols(symbol)
+                                // forceUpdate()
                             }}}
                         >
                         <View style={runTheJewls(1)}>
